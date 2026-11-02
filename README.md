@@ -74,10 +74,11 @@ Deployment approval requires the business owner to accept operational ownership 
    ```powershell
    npx supabase login
    npx supabase link --project-ref YOUR_PROJECT_REF
+   npx supabase migration list --linked
    npx supabase db push
    ```
 
-   Find the project ref in the Supabase dashboard URL. The CLI may request credentials in your local terminal; do not share them. Do not run `db push` against a project with existing application data or schema until its state has been reviewed.
+   Find the project ref in the Supabase dashboard URL and make sure it matches the hostname in `NEXT_PUBLIC_SUPABASE_URL`. Confirm the linked project and review the migration list before pushing. The CLI may request credentials in your local terminal; do not share them. Do not run `db push` against a project with existing application data or schema until its state has been reviewed.
 5. Create the first Supabase Auth user in the dashboard:
 
    - Open **Authentication** → **Users**.

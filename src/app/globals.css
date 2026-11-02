@@ -380,7 +380,7 @@ h2 { margin: 13px 0 0; font-size: clamp(38px, 4.4vw, 54px); line-height: 1.16; f
 .crown-hero { display: grid; grid-template-columns: 1.08fr .92fr; min-height: min(720px, calc(100vh - 115px)); background: #f1f0ea; }
 .crown-hero-copy { display: flex; flex-direction: column; justify-content: center; padding: 76px max(40px, calc((100vw - 1220px) / 2)) 76px max(40px, calc((100vw - 1220px) / 2)); }
 .crown-hero-copy h1 { max-width: 670px; margin: 0 0 22px; font-size: clamp(46px, 5.6vw, 76px); font-weight: 800; letter-spacing: -.04em; line-height: 1.04; text-transform: uppercase; }
-.crown-hero-copy h1 span { color: #927537; }
+.crown-hero-copy h1 span { display: block; color: #927537; }
 .crown-hero-copy > p:not(.crown-request-note) { max-width: 570px; margin: 0 0 30px; color: #515154; font-size: 16px; line-height: 1.75; }
 .crown-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .crown-button { display: inline-flex; min-height: 50px; align-items: center; justify-content: center; gap: 12px; padding: 0 22px; border: 1px solid #0b1a30; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-align: center; text-transform: uppercase; transition: color .2s, background .2s, border-color .2s; }
@@ -392,6 +392,7 @@ h2 { margin: 13px 0 0; font-size: clamp(38px, 4.4vw, 54px); line-height: 1.16; f
 .crown-hero-visual, .crown-story-image, .crown-gallery-image { position: relative; min-height: 300px; overflow: hidden; background: #d6d3ca; }
 .crown-hero-visual > img, .crown-story-image > img, .crown-gallery-image > img, .crown-service-image > img { object-fit: cover; }
 .crown-image-label { position: absolute; z-index: 1; right: 12px; bottom: 12px; max-width: calc(100% - 24px); padding: 7px 10px; color: #fff; background: #0b1a30e8; font-size: 9px; font-weight: 700; letter-spacing: .03em; line-height: 1.4; }
+.crown-hero-visual .crown-image-label { top: 12px; right: auto; bottom: auto; left: 12px; }
 .crown-trust-strip { border-bottom: 1px solid #e5e5e7; background: #fff; }
 .crown-trust-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; padding-block: 24px; }
 .crown-trust-grid p { display: flex; align-items: center; gap: 13px; margin: 0; color: #0b1a30; font-size: 10px; font-weight: 800; letter-spacing: .08em; line-height: 1.5; text-transform: uppercase; }
@@ -402,8 +403,18 @@ h2 { margin: 13px 0 0; font-size: clamp(38px, 4.4vw, 54px); line-height: 1.16; f
 .crown-section-heading { display: flex; justify-content: space-between; align-items: end; gap: 45px; margin-bottom: 40px; }
 .crown-section-heading h2 { margin-bottom: 0; }
 .crown-section-heading > p { max-width: 470px; margin: 0 0 4px; color: #515154; font-size: 14px; line-height: 1.8; }
-.crown-service-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
-.crown-service-card { min-width: 0; min-height: 0; padding: 0; overflow: hidden; border: 1px solid #e5e5e7; border-radius: 0; background: #fff; }
+.crown-service-carousel { min-width: 0; }
+.crown-service-carousel-controls { display: flex; justify-content: flex-end; gap: 10px; margin: -18px 0 22px; }
+.crown-slider-button { display: inline-flex; min-width: 44px; height: 44px; align-items: center; justify-content: center; padding: 0 14px; border: 1px solid #e5e5e7; border-radius: 0; color: #0b1a30; background: #fff; font-size: 15px; font-weight: 700; cursor: pointer; transition: color .2s, background .2s, border-color .2s; }
+.crown-slider-button:hover:not(:disabled), .crown-slider-button:focus-visible:not(:disabled) { border-color: #0b1a30; color: #fff; background: #0b1a30; }
+.crown-slider-button:focus-visible { outline: 2px solid #927537; outline-offset: 3px; }
+.crown-slider-button:disabled { opacity: .65; cursor: not-allowed; }
+.crown-slider-pause { min-width: 78px; font-size: 10px; letter-spacing: .07em; text-transform: uppercase; }
+.crown-service-carousel-viewport { overflow-x: auto; padding-bottom: 16px; scrollbar-width: none; -ms-overflow-style: none; }
+.crown-service-carousel-viewport::-webkit-scrollbar { display: none; }
+.crown-service-carousel-track, .crown-service-carousel-group { display: flex; width: max-content; gap: 22px; }
+.crown-service-grid { display: flex; gap: 22px; }
+.crown-service-card { flex: 0 0 clamp(280px, 31vw, 370px); min-width: 0; min-height: 0; padding: 0; overflow: hidden; border: 1px solid #e5e5e7; border-radius: 0; background: #fff; }
 .crown-service-card:hover { transform: translateY(-5px); box-shadow: 0 16px 34px #0b1a3017; }
 .crown-service-card.featured-card { background: #fff; border-color: #e5e5e7; }
 .crown-service-image { position: relative; height: auto; aspect-ratio: 16 / 9; margin: 0; border-radius: 0; background-position: center; background-size: cover; }
@@ -474,7 +485,6 @@ h2 { margin: 13px 0 0; font-size: clamp(38px, 4.4vw, 54px); line-height: 1.16; f
 @media (max-width: 1000px) {
   .crown-hero { grid-template-columns: 1fr 1fr; }
   .crown-hero-copy { padding-inline: 38px; }
-  .crown-service-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .crown-section-heading { align-items: flex-start; flex-direction: column; gap: 20px; }
 }
 
@@ -507,6 +517,7 @@ h2 { margin: 13px 0 0; font-size: clamp(38px, 4.4vw, 54px); line-height: 1.16; f
   .crown-hero-copy h1 { font-size: clamp(40px, 11vw, 60px); }
   .crown-hero-copy > p:not(.crown-request-note) { font-size: 14px; }
   .crown-hero-visual { min-height: 310px; }
+  .crown-hero-visual .crown-image-label { max-width: calc(100% - 172px); }
   .crown-actions { display: grid; grid-template-columns: 1fr; }
   .crown-trust-grid { grid-template-columns: 1fr; gap: 12px; padding-block: 18px; }
   .crown-trust-grid p { font-size: 9px; }
@@ -514,7 +525,11 @@ h2 { margin: 13px 0 0; font-size: clamp(38px, 4.4vw, 54px); line-height: 1.16; f
   .crown-section h2, .crown-section-heading h2 { font-size: clamp(32px, 9vw, 44px); }
   .crown-section-heading { margin-bottom: 29px; }
   .crown-section-heading > p { font-size: 12px; }
-  .crown-service-grid, .crown-standard-grid, .crown-process-grid, .crown-gallery-grid { grid-template-columns: 1fr; gap: 16px; }
+  .crown-service-carousel-controls { margin-top: -13px; }
+  .crown-slider-button { min-width: 40px; height: 40px; }
+  .crown-service-carousel-track, .crown-service-carousel-group, .crown-service-grid { gap: 16px; }
+  .crown-service-card { flex-basis: min(84vw, 340px); }
+  .crown-standard-grid, .crown-process-grid, .crown-gallery-grid { grid-template-columns: 1fr; gap: 16px; }
   .crown-service-content { min-height: 0; }
   .crown-service-content p { min-height: 0; }
   .crown-story-grid, .crown-pricing-grid, .crown-coverage-grid, .crown-quote-grid, .crown-footer-grid { grid-template-columns: 1fr; gap: 28px; }

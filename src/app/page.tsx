@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import FaqChat from "@/components/faq-chat";
 import InquiryForm from "@/components/inquiry-form";
+import ServiceCarousel from "@/components/service-carousel";
 import ServiceCard from "@/components/service-card";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
@@ -33,6 +34,10 @@ export default async function Home() {
     getPublishedFaqTree(),
     getPublicHomeCopy(),
   ]);
+  const headlineWords = homeCopy.headline.trim().split(/\s+/);
+  const headlineSplitIndex = Math.ceil(headlineWords.length / 2);
+  const headlineLead = headlineWords.slice(0, headlineSplitIndex).join(" ");
+  const headlineEmphasis = headlineWords.slice(headlineSplitIndex).join(" ");
 
   return (
     <div className="crown-site">
@@ -41,7 +46,10 @@ export default async function Home() {
         <section className="crown-hero">
           <div className="crown-hero-copy">
             <div className="crown-eyebrow">{homeCopy.eyebrow}</div>
-            <h1>{homeCopy.headline}</h1>
+            <h1>
+              {headlineLead}
+              {headlineEmphasis && <> <span>{headlineEmphasis}</span></>}
+            </h1>
             <p>{homeCopy.introduction}</p>
             <div className="crown-actions">
               <Link className="crown-button crown-button-primary" href="#quote">
@@ -57,13 +65,13 @@ export default async function Home() {
           </div>
           <div className="crown-hero-visual">
             <Image
-              src="https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=1600&q=85"
-              alt="Illustrative stock photograph of a person cleaning a home"
+              src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&w=1600&q=85"
+              alt="Illustrative stock photograph of a person washing a car; not a Crown Cleaning Solutions project"
               fill
               priority
               sizes="(max-width: 900px) 100vw, 50vw"
             />
-            <span className="crown-image-label">Illustrative stock image</span>
+            <span className="crown-image-label">Illustrative stock image · not a Crown project</span>
           </div>
         </section>
 
@@ -89,11 +97,11 @@ export default async function Home() {
               </p>
             </div>
             {services.length > 0 ? (
-              <div className="service-grid crown-service-grid">
+              <ServiceCarousel>
                 {services.map((service, index) => (
                   <ServiceCard key={service.id} service={service} index={index} />
                 ))}
-              </div>
+              </ServiceCarousel>
             ) : (
               <p className="crown-empty-state">
                 Service details are being prepared. Contact the team to discuss

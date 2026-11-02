@@ -1,24 +1,27 @@
 # Development status
 
-**Last updated:** 2026-11-02
+**Last updated:** 2026-11-03
 **Project root:** `C:\Users\hp\Desktop\CCM`
-**Status:** Slices 1–6 are implemented. Slice 4 anonymous submission, public inquiry-read denial, staff follow-up/history, malformed-input and honeypot rejection, same-email 10-minute duplicate protection, concurrency handling, cooldown expiry, and failed-backend behavior are verified. Slice 5 role-specific access and no-staff sign-in denial are verified. Slice 6 CMS service, homepage, contact, service-area, image, and synthetic FAQ workflows have been verified. The Crown redesign is implemented; lint, type-check, tests, production build, production route smoke checks, and desktop/tablet/mobile browser checks passed.
+**Status:** Slices 1–6 are implemented. Slice 4 anonymous submission, public inquiry-read denial, staff follow-up/history, malformed-input and honeypot rejection, same-email 10-minute duplicate protection, concurrency handling, cooldown expiry, and failed-backend behavior are verified. Slice 5 role-specific access and no-staff sign-in denial are verified. Slice 6 CMS service, homepage, contact, service-area, image, and synthetic FAQ workflows have been verified. The Crown redesign is implemented; lint, type-check, tests, production build, production route smoke checks, and desktop/tablet/mobile browser checks passed. The owner reports successful local testing against the new Supabase project after applying migrations and creating an admin user. This is not a production deployment.
 
 ## Resume here
 
-- **Repository:** `https://github.com/EYONET/DEMO` (`main`). The new repository started with a GitHub README; preserve both histories when publishing the local app (do not force-push).
+- **Repository:** `https://github.com/EYONET/DEMO` (`main`). The app history and repository starter history are merged; the latest local commit is present on the remote.
 - **Working stack:** Next.js App Router, TypeScript, Supabase Auth/Postgres/Storage; guided button-based FAQ only (no AI/LLM).
 - **Run locally:** use Node.js and npm, set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` from the new development Supabase project in a private `.env.local`, then run `npm install` and `npm run dev`. Do not copy credentials into GitHub, documentation, or chat. Current owner preview uses `http://localhost:3000`.
-- **Verified in the current development project:** Admin login/CMS access; service draft create/edit/delete and public draft invisibility; homepage copy persistence/display; contact settings persistence/display; service-area create/edit, publish/display, then deactivate/hide; image upload and replacement on a synthetic draft. Lint, type-check, production build, and public route smoke checks pass.
+- **Verified in the current development project:** The new project's four migrations were applied and the owner's Auth account was granted `admin`. The owner reports local app testing is working. Prior development-project checks include admin login/CMS access; service draft create/edit/delete and public draft invisibility; homepage copy persistence/display; contact settings persistence/display; service-area create/edit, publish/display, then deactivate/hide; and image upload/replacement on a synthetic draft. Lint, type-check, tests, production build, and public route smoke checks pass.
 - **Synthetic CMS data intentionally remaining:** one inactive service-area row named `CMS Verification Test Updated, ZZ`. It is not published and should not be activated except for an explicitly approved test. The temporary image-test service was deleted; the outcome of deleting its Storage object was not independently inspected.
-- **Next:** finish connecting the new Supabase development project: replace the old local URL/key in ignored `.env.local`, link the Supabase CLI to the new project, apply the four migrations, create an admin user, and test the app. Then choose the hosting platform and durable distributed rate-limit provider. The remaining old-development-project CMS-row audit can be skipped if that project is no longer needed.
+- **Next:** continue owner testing with synthetic inquiries and complete the client content questionnaire. Resolve the form-vs-approved-copy gap: the form currently collects an optional city but no ZIP/postal code, while approved coverage wording asks visitors to share a ZIP code. Confirm whether to add a postal-code field before launch. Then select hosting and a durable distributed rate-limit provider, create a separate production Supabase project, and complete production configuration and operational checks.
 - **Pre-launch blockers:** approved business identity/content/pricing/coverage and privacy/retention wording; selected hosting/domain and a production Supabase project; production secrets, Auth redirect/email configuration, production migration/RLS/Storage verification, an owner-managed backup/restore plan, provider-backed inquiry abuse controls, production smoke tests, and handover. This remains a development preview, not production-ready.
 
 ## Current checkpoint
 
 - Product choices: Next.js + TypeScript + Supabase; U.S.-oriented English; proposal services; Option A FAQ only; current public design is the owner-approved Crown Cleaning Solutions navy/gold redesign. The BrightNest demo design is historical.
 - Owner-approved content supplied for Crown: regular/deep-cleaning explanation and Aurora/Denver, Colorado coverage with ZIP-code confirmation. Prices, testimonials, credentials, detailed service inclusions, hours, and operating claims are not approved for publication.
+- The inquiry form requires name and email and optionally collects phone, city, service, and message. A ZIP/postal-code field is not currently present; confirm the field with the owner and add it if ZIP confirmation is needed at inquiry time.
 - Current redesign includes all requested home-page content areas that can be represented without inventing facts. The customer-feedback area is a placeholder; stock-photo gallery imagery is explicitly illustrative and not Crown before-and-after evidence. Service-card images have an error fallback from CMS media to labeled stock imagery; service detail routes use the same fallback.
+- The approved hero refinement renders the CMS headline in two color segments, with the latter half in gold, and uses a clearly labeled illustrative car-washing stock photo. It is not presented as Crown project work or as a service claim.
+- The home service cards use a continuously looping horizontal carousel with previous/next and pause controls. It pauses on hover/focus and honors reduced-motion preferences; service content remains CMS-driven.
 - System blueprint: `SYSTEM-DESIGN.md`
 - Product requirements: `PRD.md`
 - Delivery plan: `PLAN.md`
@@ -31,12 +34,12 @@
 
 ## Repository and tooling
 
-- Active GitHub repository: `https://github.com/EYONET/DEMO`. The GitHub repository currently has a starter README; retain its history and merge the local application history without force-pushing.
+- Active GitHub repository: `https://github.com/EYONET/DEMO`. Its starter commit was merged with the application history; the local latest commit is confirmed on remote `main`.
 - The local app history originated in `https://github.com/eyosyaszerihun384-netizen/Cleaning-full-stack-app-repository`; the user is switching to a new GitHub account/repository after losing access to the prior account's 2FA authenticator.
 - Local Git author identity and credential helper are configured.
 - The app includes the project docs, safe environment template, and four version-controlled Supabase migrations. `.env.local` is ignored. The standalone demo files remain separate from the tracked full-stack repository baseline.
 - Git 2.55.0, Node.js `v24.22.0`, and npm `11.19.1` are available.
-- A new Supabase project has been created under the new account. Its URL/key have not yet been connected to this local copy, and its four migrations have not yet been applied. Update `.env.local` locally using the new project's dashboard values; never share or commit those values.
+- New test Supabase project `feuiuvlbqbfcyahzqwnl` is linked in the local CLI and matches the ignored `.env.local` project URL. The owner reports all four migrations were applied and the admin role was created after correcting an initial stale CLI project link. Never share or commit project credentials.
 - Production configuration has not been set up or verified.
 - Added a Node built-in test runner for inquiry validation and a GitHub Actions workflow for lint, type-check, tests, and production build. Clean `npm ci`, all four inquiry tests, lint, type-check, and production build pass locally; the GitHub workflow awaits a push to run remotely. Browser smoke checks visited `/`, `/about`, `/contact`, `/services`, `/admin/login`, and `/admin/content` at 375px and 1440px. All public routes and login returned 200 without horizontal overflow; unauthenticated content management redirected to sign-in.
 - Demo FAQ browser QA exercised 39 choices across 11 menus, including child navigation, root return, quote action, thinking completion, and the 375px layout. Prior synthetic CMS FAQ publish/fallback behavior was also verified. No live published business FAQ tree exists to test.
