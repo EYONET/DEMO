@@ -17,7 +17,7 @@ The Next.js App Router site reads published public content from Supabase and inc
 
 The public-site redesign now uses the owner-approved Crown Cleaning Solutions brand and navy/gold direction. Approved public copy includes regular/deep-cleaning guidance and Aurora/Denver coverage with ZIP-code confirmation. Stock imagery is illustrative, not Crown work; real testimonials, prices, credentials, and project photos remain subject to owner approval.
 
-The project concept and implementation decisions are captured in [PRD.md](./PRD.md), [PLAN.md](./PLAN.md), [SYSTEM-DESIGN.md](./SYSTEM-DESIGN.md), and [Design.md](./Design.md). Source repository: [Cleaning-full-stack-app-repository](https://github.com/eyosyaszerihun384-netizen/Cleaning-full-stack-app-repository). Keep `.env.local` and all real credentials local and ignored; GitHub contains only safe configuration templates.
+The project concept and implementation decisions are captured in [PRD.md](./PRD.md), [PLAN.md](./PLAN.md), [SYSTEM-DESIGN.md](./SYSTEM-DESIGN.md), and [Design.md](./Design.md). Source repository: [DEMO](https://github.com/EYONET/DEMO). Keep `.env.local` and all real credentials local and ignored; GitHub contains only safe configuration templates.
 
 ## Local development
 

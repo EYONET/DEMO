@@ -1,17 +1,17 @@
 # Development status
 
-**Last updated:** 2026-10-22
-**Project root:** Current Copilot chat workspace
+**Last updated:** 2026-11-02
+**Project root:** `C:\Users\hp\Desktop\CCM`
 **Status:** Slices 1–6 are implemented. Slice 4 anonymous submission, public inquiry-read denial, staff follow-up/history, malformed-input and honeypot rejection, same-email 10-minute duplicate protection, concurrency handling, cooldown expiry, and failed-backend behavior are verified. Slice 5 role-specific access and no-staff sign-in denial are verified. Slice 6 CMS service, homepage, contact, service-area, image, and synthetic FAQ workflows have been verified. The Crown redesign is implemented; lint, type-check, tests, production build, production route smoke checks, and desktop/tablet/mobile browser checks passed.
 
 ## Resume here
 
-- **Repository:** `https://github.com/eyosyaszerihun384-netizen/Cleaning-full-stack-app-repository` (`main`). Check `git status` and `git log -1` to confirm the latest local and remote checkpoint before resuming.
+- **Repository:** `https://github.com/EYONET/DEMO` (`main`). The new repository started with a GitHub README; preserve both histories when publishing the local app (do not force-push).
 - **Working stack:** Next.js App Router, TypeScript, Supabase Auth/Postgres/Storage; guided button-based FAQ only (no AI/LLM).
-- **Run locally:** use Node.js and npm, provide `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in a private `.env.local`, then run `npm install` and `npm run dev`. Do not copy credentials into GitHub, documentation, or chat. Current owner preview uses `http://localhost:3000`.
+- **Run locally:** use Node.js and npm, set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` from the new development Supabase project in a private `.env.local`, then run `npm install` and `npm run dev`. Do not copy credentials into GitHub, documentation, or chat. Current owner preview uses `http://localhost:3000`.
 - **Verified in the current development project:** Admin login/CMS access; service draft create/edit/delete and public draft invisibility; homepage copy persistence/display; contact settings persistence/display; service-area create/edit, publish/display, then deactivate/hide; image upload and replacement on a synthetic draft. Lint, type-check, production build, and public route smoke checks pass.
 - **Synthetic CMS data intentionally remaining:** one inactive service-area row named `CMS Verification Test Updated, ZZ`. It is not published and should not be activated except for an explicitly approved test. The temporary image-test service was deleted; the outcome of deleting its Storage object was not independently inspected.
-- **Next:** choose the hosting platform and durable distributed rate-limit provider. The remaining CMS-row audit requires restoring Supabase CLI database-password authentication; the orphan image object has been removed and verified absent.
+- **Next:** finish connecting the new Supabase development project: replace the old local URL/key in ignored `.env.local`, link the Supabase CLI to the new project, apply the four migrations, create an admin user, and test the app. Then choose the hosting platform and durable distributed rate-limit provider. The remaining old-development-project CMS-row audit can be skipped if that project is no longer needed.
 - **Pre-launch blockers:** approved business identity/content/pricing/coverage and privacy/retention wording; selected hosting/domain and a production Supabase project; production secrets, Auth redirect/email configuration, production migration/RLS/Storage verification, an owner-managed backup/restore plan, provider-backed inquiry abuse controls, production smoke tests, and handover. This remains a development preview, not production-ready.
 
 ## Current checkpoint
@@ -31,14 +31,13 @@
 
 ## Repository and tooling
 
-- Full-stack app is intended for a **new public GitHub repository**, separate from the static demo repository.
-- Git repository initialized on `main` and `origin` set to `https://github.com/eyosyaszerihun384-netizen/Cleaning-full-stack-app-repository.git`.
-- Baseline commits `fbc7438` and `fb3d52b` contain the system blueprint and GitHub connection checkpoint; the user confirmed the initial push succeeded and GitHub `main` contains the project documents.
+- Active GitHub repository: `https://github.com/EYONET/DEMO`. The GitHub repository currently has a starter README; retain its history and merge the local application history without force-pushing.
+- The local app history originated in `https://github.com/eyosyaszerihun384-netizen/Cleaning-full-stack-app-repository`; the user is switching to a new GitHub account/repository after losing access to the prior account's 2FA authenticator.
 - Local Git author identity and credential helper are configured.
-- The baseline commit contains the project docs and safe environment template. `.env.local` is ignored. The standalone demo files remain separate from the tracked full-stack repository baseline.
+- The app includes the project docs, safe environment template, and four version-controlled Supabase migrations. `.env.local` is ignored. The standalone demo files remain separate from the tracked full-stack repository baseline.
 - Git 2.55.0, Node.js `v24.22.0`, and npm `11.19.1` are available.
-- A Supabase development project is linked; the URL and publishable key are configured locally and `.env.local` is ignored by Git.
-- The linked development project reports all four local migrations applied. Production configuration has not been set up or verified.
+- A new Supabase project has been created under the new account. Its URL/key have not yet been connected to this local copy, and its four migrations have not yet been applied. Update `.env.local` locally using the new project's dashboard values; never share or commit those values.
+- Production configuration has not been set up or verified.
 - Added a Node built-in test runner for inquiry validation and a GitHub Actions workflow for lint, type-check, tests, and production build. Clean `npm ci`, all four inquiry tests, lint, type-check, and production build pass locally; the GitHub workflow awaits a push to run remotely. Browser smoke checks visited `/`, `/about`, `/contact`, `/services`, `/admin/login`, and `/admin/content` at 375px and 1440px. All public routes and login returned 200 without horizontal overflow; unauthenticated content management redirected to sign-in.
 - Demo FAQ browser QA exercised 39 choices across 11 menus, including child navigation, root return, quote action, thinking completion, and the 375px layout. Prior synthetic CMS FAQ publish/fallback behavior was also verified. No live published business FAQ tree exists to test.
 - Read-only Storage listing found one object left by the deleted generated image-test service. Removed that exact object from the development `site-media` bucket; a follow-up listing confirmed it is empty. Attempts to inspect service-area and archived FAQ rows through `supabase db query --linked` failed because the CLI's temporary database role could not authenticate with the configured database password. No database rows were changed; the inactive synthetic service-area and archived synthetic FAQ nodes remain pending a successful read-only audit.
