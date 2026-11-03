@@ -167,13 +167,13 @@ export default async function Home() {
           <div className="crown-container">
             <div className="crown-section-heading">
               <div>
-                <p className="crown-eyebrow">04 / Cleaning inspiration</p>
-                <h2>Spaces worth<br /><span>caring for.</span></h2>
+                <p className="crown-eyebrow">04 / Evidence of Craft</p>
+                <h2>A closer look<br /><span>at clean spaces.</span></h2>
               </div>
               <p>
-                These licensed stock images are illustrative only. They are not
-                Crown Cleaning Solutions projects or before-and-after results.
-                Real project photos can be added when available and approved.
+                These licensed stock photos are visual references only—not
+                Crown projects or evidence of results. Authentic project photos
+                can replace them when available and approved.
               </p>
             </div>
             <div className="crown-gallery-grid">
@@ -188,42 +188,110 @@ export default async function Home() {
               ))}
             </div>
             <p className="crown-gallery-note">
-              Before-and-after examples from Crown will be published only with
-              the business’s permission and authentic project images.
+              No before-and-after examples are shown. Any future project
+              photography will be genuine and published only with permission.
+            </p>
+          </div>
+        </section>
+
+        <section className="crown-section crown-before-after-section" id="before-after">
+          <div className="crown-container">
+            <div className="crown-section-heading">
+              <div>
+                <p className="crown-eyebrow">05 / Before &amp; after</p>
+                <h2>Real project photos<br /><span>coming when approved.</span></h2>
+              </div>
+              <p>
+                This space is reserved for matched before-and-after photos from
+                Crown projects. No project photos have been provided for this
+                preview, so these are clearly marked layout placeholders.
+              </p>
+            </div>
+            <div className="crown-before-after-grid">
+              {[1, 2, 3].map((pairNumber) => (
+                <article className="crown-before-after-card" key={pairNumber}>
+                  <div className="crown-before-after-pair">
+                    <div className="crown-before-after-slot">
+                      <span>Before</span>
+                      <p>Approved Crown project photo needed</p>
+                    </div>
+                    <div className="crown-before-after-slot">
+                      <span>After</span>
+                      <p>Approved Crown project photo needed</p>
+                    </div>
+                  </div>
+                  <p className="crown-before-after-caption">
+                    Photo pair placeholder {String(pairNumber).padStart(2, "0")}
+                  </p>
+                </article>
+              ))}
+            </div>
+            <p className="crown-gallery-note">
+              These are not photos or examples of completed work. Only genuine
+              Crown project images, shared with permission, will appear here.
             </p>
           </div>
         </section>
 
         <section className="crown-section crown-process-section" id="protocol">
           <div className="crown-container">
-            <p className="crown-eyebrow">05 / The next steps</p>
-            <h2>From first request<br /><span>to confirmed service.</span></h2>
+            <p className="crown-eyebrow">06 / Operational Framework</p>
+            <h2>From first inquiry<br /><span>to confirmed service.</span></h2>
             <div className="crown-process-grid">
-              <article><span>01</span><h3>Share your needs</h3><p>Tell us which kind of cleaning you are interested in and share your ZIP code.</p></article>
-              <article><span>02</span><h3>We follow up</h3><p>The team reviews your inquiry and contacts you to discuss details.</p></article>
-              <article><span>03</span><h3>Confirm the details</h3><p>Service and availability must be confirmed by the business; the inquiry is not an appointment.</p></article>
+              <article>
+                <span>01</span>
+                <h3>Send an inquiry</h3>
+                <p>Share the cleaning service you are interested in and your location so the team can review your request.</p>
+              </article>
+              <article>
+                <span>02</span>
+                <h3>Request review</h3>
+                <p>The team reviews the information you provide and considers the service you are asking about.</p>
+              </article>
+              <article>
+                <span>03</span>
+                <h3>Discuss your needs</h3>
+                <p>A team member follows up with you to discuss your request and any details that need clarification.</p>
+              </article>
+              <article>
+                <span>04</span>
+                <h3>Confirm service</h3>
+                <p>The business confirms service and availability with you. Submitting an inquiry is not an appointment.</p>
+              </article>
             </div>
           </div>
         </section>
 
         <section className="crown-section crown-testimonials-section" id="testimonials">
           <div className="crown-container">
-            <p className="crown-eyebrow">06 / Customer feedback</p>
+            <p className="crown-eyebrow">07 / Customer feedback</p>
             <h2>Reviews, when<br /><span>they’re ready.</span></h2>
-            <div className="crown-placeholder-card">
-              <span aria-hidden="true">“</span>
-              <p>
-                Customer reviews will be added after Crown has genuine feedback
-                and permission to publish it. No sample testimonials are shown.
-              </p>
+            <div className="crown-review-grid">
+              {[1, 2, 3].map((previewNumber) => (
+                <article className="crown-placeholder-card" key={previewNumber}>
+                  <span aria-hidden="true">“</span>
+                  <div className="crown-review-preview">
+                    <p className="crown-review-preview-label">
+                      Fictional layout preview · not a real review
+                    </p>
+                    <blockquote>
+                      Sample customer feedback will appear here after a real
+                      review is received and approved for publication.
+                    </blockquote>
+                    <p className="crown-review-attribution">
+                      Placeholder {String(previewNumber).padStart(2, "0")} · no customer
+                    </p>
+                  </div>
+                </article>
+              ))}
             </div>
-          </div>
+            </div>
         </section>
 
         <section className="crown-section crown-pricing-section" id="pricing">
           <div className="crown-container crown-pricing-grid">
             <div>
-              <p className="crown-eyebrow">07 / Pricing guidance</p>
+              <p className="crown-eyebrow">08 / Pricing guidance</p>
               <h2>Let’s understand<br /><span>what you need.</span></h2>
             </div>
             <div className="crown-pricing-copy">
@@ -242,7 +310,7 @@ export default async function Home() {
         <section className="crown-section crown-coverage-section" id="coverage">
           <div className="crown-container crown-coverage-grid">
             <div>
-              <p className="crown-eyebrow">08 / Service area</p>
+              <p className="crown-eyebrow">09 / Service area</p>
               <h2>Serving Aurora<br /><span>and Denver.</span></h2>
               <p>
                 We serve customers in the Aurora and Denver, Colorado area.
@@ -261,7 +329,7 @@ export default async function Home() {
         <section className="crown-section crown-quote-section" id="quote">
           <div className="crown-container crown-quote-grid">
             <div>
-              <p className="crown-eyebrow">09 / Request an estimate</p>
+              <p className="crown-eyebrow">10 / Request an estimate</p>
               <h2>Tell us about<br /><span>your space.</span></h2>
               <p>
                 Share a few details and a ZIP code. The team will follow up to

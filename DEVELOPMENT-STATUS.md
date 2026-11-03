@@ -19,9 +19,12 @@
 - Product choices: Next.js + TypeScript + Supabase; U.S.-oriented English; proposal services; Option A FAQ only; current public design is the owner-approved Crown Cleaning Solutions navy/gold redesign. The BrightNest demo design is historical.
 - Owner-approved content supplied for Crown: regular/deep-cleaning explanation and Aurora/Denver, Colorado coverage with ZIP-code confirmation. Prices, testimonials, credentials, detailed service inclusions, hours, and operating claims are not approved for publication.
 - The inquiry form requires name and email and optionally collects phone, city, service, and message. A ZIP/postal-code field is not currently present; confirm the field with the owner and add it if ZIP confirmation is needed at inquiry time.
-- Current redesign includes all requested home-page content areas that can be represented without inventing facts. The customer-feedback area is a placeholder; stock-photo gallery imagery is explicitly illustrative and not Crown before-and-after evidence. Service-card images have an error fallback from CMS media to labeled stock imagery; service detail routes use the same fallback.
+- Current redesign includes all requested home-page content areas that can be represented without inventing facts. The customer-feedback area has three clearly labeled fictional layout-preview cards, not real customer reviews; replace them with genuine feedback only after approval. Stock-photo gallery imagery is explicitly illustrative and not Crown before-and-after evidence. Service-card images have an error fallback from CMS media to labeled stock imagery; service detail routes use the same fallback.
 - The approved hero refinement renders the CMS headline in two color segments, with the latter half in gold, and uses a clearly labeled illustrative car-washing stock photo. It is not presented as Crown project work or as a service claim.
 - The home service cards use a continuously looping horizontal carousel with previous/next and pause controls. It pauses on hover/focus and honors reduced-motion preferences; service content remains CMS-driven.
+- The gallery is presented as “Evidence of Craft,” inspired by the reference’s three-image layout, with clear notices that current photos are illustrative stock rather than Crown project evidence.
+- A separate before-and-after section provides three paired layout placeholders. It explicitly states that no Crown project photos are supplied and that only approved authentic photos will be used.
+- The process section follows the reference’s four-step Operational Framework layout, while describing only the inquiry, staff follow-up, and confirmation workflow.
 - System blueprint: `SYSTEM-DESIGN.md`
 - Product requirements: `PRD.md`
 - Delivery plan: `PLAN.md`

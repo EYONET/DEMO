@@ -30,7 +30,8 @@ export default function MobileNavigation() {
       >
         <Link href="/services" onClick={closeMenu}>Solutions</Link>
         <Link href="/#standard" onClick={closeMenu}>Our standard</Link>
-        <Link href="/#protocol" onClick={closeMenu}>Process</Link>
+        <Link href="/#before-after" onClick={closeMenu}>Before &amp; after</Link>
+        <Link href="/#protocol" onClick={closeMenu}>Operational framework</Link>
         <Link href="/#pricing" onClick={closeMenu}>Pricing</Link>
         <Link href="/about" onClick={closeMenu}>About</Link>
         <Link className="button button-small button-dark nav-cta" href="/#quote" onClick={closeMenu}>
