@@ -300,9 +300,9 @@ export default async function Home() {
                 cleaning you are considering and the team can follow up about
                 your request.
               </p>
-              <Link className="crown-button crown-button-primary" href="#quote">
+              <a className="crown-button crown-button-primary" href="#quote">
                 Request an estimate <span aria-hidden="true">↗</span>
-              </Link>
+              </a>
             </div>
           </div>
         </section>
