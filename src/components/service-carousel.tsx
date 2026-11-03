@@ -5,25 +5,20 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 export default function ServiceCarousel({ children }: { children: ReactNode }) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const firstGroupRef = useRef<HTMLDivElement>(null);
-  const [isPaused, setIsPaused] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const [isInteracting, setIsInteracting] = useState(false);
   const [isPageVisible, setIsPageVisible] = useState(true);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(true);
   const interactionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
     setPrefersReducedMotion(motionPreference.matches);
-    setIsPaused(motionPreference.matches);
 
     function handleMotionPreferenceChange(event: MediaQueryListEvent) {
       setPrefersReducedMotion(event.matches);
-      if (event.matches) {
-        setIsPaused(true);
-      }
     }
 
     motionPreference.addEventListener("change", handleMotionPreferenceChange);
@@ -70,7 +65,7 @@ export default function ServiceCarousel({ children }: { children: ReactNode }) {
       !viewport ||
       !firstGroup ||
       !track ||
-      isPaused ||
+      prefersReducedMotion ||
       isHovered ||
       isFocused ||
       isInteracting ||
@@ -102,7 +97,7 @@ export default function ServiceCarousel({ children }: { children: ReactNode }) {
       lastTimestamp = timestamp;
 
       if (!document.hidden && cycleWidth > 0) {
-        viewport.scrollLeft += (28 * elapsed) / 1000;
+        viewport.scrollLeft += (80 * elapsed) / 1000;
         if (viewport.scrollLeft >= cycleWidth) {
           viewport.scrollLeft %= cycleWidth;
         }
@@ -116,7 +111,14 @@ export default function ServiceCarousel({ children }: { children: ReactNode }) {
       window.cancelAnimationFrame(animationFrame);
       resizeObserver.disconnect();
     };
-  }, [isFocused, isHovered, isInView, isInteracting, isPageVisible, isPaused]);
+  }, [
+    isFocused,
+    isHovered,
+    isInView,
+    isInteracting,
+    isPageVisible,
+    prefersReducedMotion,
+  ]);
 
   useEffect(
     () => () => {
@@ -179,22 +181,6 @@ export default function ServiceCarousel({ children }: { children: ReactNode }) {
           onClick={() => move(1)}
         >
           <span aria-hidden="true">→</span>
-        </button>
-        <button
-          className="crown-slider-button crown-slider-pause"
-          type="button"
-          aria-pressed={isPaused}
-          aria-label={
-            prefersReducedMotion
-              ? "Automatic scrolling is disabled by your reduced-motion preference"
-              : isPaused
-              ? "Resume automatic service scrolling"
-              : "Pause automatic service scrolling"
-          }
-          disabled={prefersReducedMotion}
-          onClick={() => setIsPaused((paused) => !paused)}
-        >
-          {prefersReducedMotion ? "Motion off" : isPaused ? "Resume" : "Pause"}
         </button>
       </div>
       <div

@@ -34,7 +34,7 @@ export default async function ContactPage() {
             <article className="contact-panel">
               <span className="eyebrow">Contact details</span>
               <h2>Talk with the team.</h2>
-              {contact.email || contact.phone ? (
+              {contact.email || contact.phone || contact.alternatePhone || contact.businessHours ? (
                 <ul className="contact-methods">
                   {contact.email && (
                     <li>
@@ -51,6 +51,26 @@ export default async function ContactPage() {
                       <span>
                         <small>Phone</small>
                         <a href={`tel:${contact.phone.replace(/[^\d+]/g, "")}`}>{contact.phone}</a>
+                      </span>
+                    </li>
+                  )}
+                  {contact.alternatePhone && (
+                    <li>
+                      <span className="contact-method-icon" aria-hidden="true">☎</span>
+                      <span>
+                        <small>Additional phone</small>
+                        <a href={`tel:${contact.alternatePhone.replace(/[^\d+]/g, "")}`}>
+                          {contact.alternatePhone}
+                        </a>
+                      </span>
+                    </li>
+                  )}
+                  {contact.businessHours && (
+                    <li>
+                      <span className="contact-method-icon" aria-hidden="true">◷</span>
+                      <span>
+                        <small>Business hours</small>
+                        <span>{contact.businessHours}</span>
                       </span>
                     </li>
                   )}

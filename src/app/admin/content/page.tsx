@@ -130,7 +130,12 @@ export default async function ContentManagementPage({
             <p>Only provide contact details approved by the business.</p>
           </div>
           <article className="cms-card cms-narrow">
-            <ContactSettingsForm email={contact.email ?? ""} phone={contact.phone ?? ""} />
+            <ContactSettingsForm
+              email={contact.email ?? ""}
+              phone={contact.phone ?? ""}
+              alternatePhone={contact.alternatePhone ?? ""}
+              businessHours={contact.businessHours ?? ""}
+            />
           </article>
         </section>
 

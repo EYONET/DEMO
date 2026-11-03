@@ -59,6 +59,11 @@ const contactSchema = z.object({
     (value) => !value || /^\+?[0-9().\-\s]{7,30}$/.test(value),
     "Enter a valid phone number.",
   ),
+  alternatePhone: z.string().trim().max(30).refine(
+    (value) => !value || /^\+?[0-9().\-\s]{7,30}$/.test(value),
+    "Enter a valid alternate phone number.",
+  ),
+  businessHours: z.string().trim().max(160),
 });
 
 const homeCopySchema = z.object({
@@ -328,6 +333,8 @@ export async function saveContactSettings(
   const parsed = contactSchema.safeParse({
     email: value(formData, "email").trim().toLowerCase(),
     phone: value(formData, "phone"),
+    alternatePhone: value(formData, "alternatePhone"),
+    businessHours: value(formData, "businessHours"),
   });
   if (!parsed.success) return { message: parsed.error.issues[0]?.message ?? "Review the contact details." };
 
@@ -337,6 +344,8 @@ export async function saveContactSettings(
     value: {
       email: parsed.data.email || null,
       phone: parsed.data.phone || null,
+      alternatePhone: parsed.data.alternatePhone || null,
+      businessHours: parsed.data.businessHours || null,
     },
     is_public: true,
     updated_by: user.id,
@@ -346,6 +355,7 @@ export async function saveContactSettings(
     return { message: "Unable to save contact details. Please try again." };
   }
 
+  revalidatePath("/");
   revalidatePath("/contact");
   return { success: true, message: "Public contact details saved." };
 }
@@ -408,6 +418,7 @@ export async function saveServiceArea(
   }
   if (!result.data) return { message: "This service area is unavailable or you no longer have permission to edit it." };
 
+  revalidatePath("/");
   revalidatePath("/about");
   return { success: true, message: "Service area saved." };
 }

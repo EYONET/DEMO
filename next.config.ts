@@ -27,6 +27,11 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "static.vecteezy.com",
+        pathname: "/system/resources/thumbnails/027/484/635/small_2x/**",
+      },
       ...(supabaseImagePattern ? [supabaseImagePattern] : []),
     ],
   },

@@ -109,13 +109,25 @@ function ServiceImageForm({ service }: { service: ServiceRow }) {
   );
 }
 
-function ContactForm({ email, phone }: { email: string; phone: string }) {
+function ContactForm({
+  email,
+  phone,
+  alternatePhone,
+  businessHours,
+}: {
+  email: string;
+  phone: string;
+  alternatePhone: string;
+  businessHours: string;
+}) {
   const [state, action, pending] = useActionState(saveContactSettings, emptyState);
   return (
     <form className="cms-form" action={action}>
       <p className="cms-help">Only publish business contact details that are approved for the public website.</p>
       <label>Public email<input type="email" name="email" maxLength={320} defaultValue={email} /></label>
       <label>Public phone<input type="tel" name="phone" maxLength={30} defaultValue={phone} /></label>
+      <label>Additional phone<input type="tel" name="alternatePhone" maxLength={30} defaultValue={alternatePhone} /></label>
+      <label>Business hours<input name="businessHours" maxLength={160} defaultValue={businessHours} /></label>
       <Result state={state} />
       <button className="button button-dark" disabled={pending}>{pending ? "Saving…" : "Save contact details"}</button>
     </form>
@@ -260,7 +272,12 @@ export function ServiceForm({
   );
 }
 
-export function ContactSettingsForm(props: { email: string; phone: string }) {
+export function ContactSettingsForm(props: {
+  email: string;
+  phone: string;
+  alternatePhone: string;
+  businessHours: string;
+}) {
   return <ContactForm {...props} />;
 }
 

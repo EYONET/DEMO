@@ -8,7 +8,11 @@ import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
 import { getPublishedFaqTree } from "@/lib/faq";
 import { getPublishedServices } from "@/lib/services";
-import { getPublicHomeCopy } from "@/lib/site-content";
+import {
+  getActiveServiceAreas,
+  getPublicContactDetails,
+  getPublicHomeCopy,
+} from "@/lib/site-content";
 
 const galleryImages = [
   {
@@ -28,12 +32,33 @@ const galleryImages = [
   },
 ];
 
+const pricingPreview = [
+  { service: "Residential cleaning", amount: "$100–$200", unit: "per visit" },
+  { service: "Commercial cleaning", amount: "$200–$500", unit: "per visit" },
+  { service: "Deep cleaning", amount: "$150–$300", unit: "per visit" },
+  { service: "Move-in cleaning", amount: "$180–$350", unit: "per visit" },
+];
+
 export default async function Home() {
-  const [services, faqNodes, homeCopy] = await Promise.all([
+  const [services, faqNodes, homeCopy, activeServiceAreas, contact] = await Promise.all([
     getPublishedServices(),
     getPublishedFaqTree(),
     getPublicHomeCopy(),
+    getActiveServiceAreas(),
+    getPublicContactDetails(),
   ]);
+  const serviceLocations = [
+    { city: "Aurora", state: "Colorado" },
+    { city: "Denver", state: "Colorado" },
+    ...activeServiceAreas.map(({ city, state }) => ({ city, state })),
+  ].filter(
+    (area, index, areas) =>
+      areas.findIndex(
+        (candidate) =>
+          candidate.city.trim().toLowerCase() === area.city.trim().toLowerCase() &&
+          candidate.state.trim().toLowerCase() === area.state.trim().toLowerCase(),
+      ) === index,
+  );
   const headlineWords = homeCopy.headline.trim().split(/\s+/);
   const headlineSplitIndex = Math.ceil(headlineWords.length / 2);
   const headlineLead = headlineWords.slice(0, headlineSplitIndex).join(" ");
@@ -59,14 +84,11 @@ export default async function Home() {
                 Explore services
               </Link>
             </div>
-            <p className="crown-request-note">
-              An inquiry is a request for follow-up, not a confirmed appointment.
-            </p>
           </div>
           <div className="crown-hero-visual">
             <Image
-              src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&w=1600&q=85"
-              alt="Illustrative stock photograph of a person washing a car; not a Crown Cleaning Solutions project"
+              src="https://static.vecteezy.com/system/resources/thumbnails/027/484/635/small_2x/man-cleaning-and-detailing-luxury-car-with-microfiber-cloth-car-wash-service-man-hand-holding-blue-microfiber-cloth-polish-red-car-after-cleaning-auto-care-service-business-concept-generative-ai-photo.jpg"
+              alt="Licensed illustrative stock image of a person polishing a car; not a Crown Cleaning Solutions project"
               fill
               priority
               sizes="(max-width: 900px) 100vw, 50vw"
@@ -289,16 +311,34 @@ export default async function Home() {
         </section>
 
         <section className="crown-section crown-pricing-section" id="pricing">
-          <div className="crown-container crown-pricing-grid">
-            <div>
-              <p className="crown-eyebrow">08 / Pricing guidance</p>
-              <h2>Let’s understand<br /><span>what you need.</span></h2>
+          <div className="crown-container">
+            <div className="crown-section-heading crown-pricing-heading">
+              <div>
+                <p className="crown-eyebrow">08 / Pricing guidance</p>
+                <h2>Let’s understand<br /><span>what you need.</span></h2>
+              </div>
+              <p>
+                These example ranges are only for previewing the website
+                design. They are not Crown Cleaning Solutions prices, quotes,
+                or offers.
+              </p>
+            </div>
+            <p className="crown-pricing-demo-label">
+              Demo pricing only · Not Crown rates
+            </p>
+            <div className="crown-pricing-cards">
+              {pricingPreview.map((item) => (
+                <article className="crown-pricing-card" key={item.service}>
+                  <h3>{item.service}</h3>
+                  <p className="crown-pricing-amount">{item.amount}</p>
+                  <p className="crown-pricing-unit">{item.unit} · sample only</p>
+                </article>
+              ))}
             </div>
             <div className="crown-pricing-copy">
               <p>
-                Pricing has not been provided for publication. Share the type of
-                cleaning you are considering and the team can follow up about
-                your request.
+                Actual pricing has not been provided. Contact the team to
+                discuss your needs and request an estimate.
               </p>
               <a className="crown-button crown-button-primary" href="#quote">
                 Request an estimate <span aria-hidden="true">↗</span>
@@ -318,9 +358,12 @@ export default async function Home() {
                 location is within our service area.
               </p>
             </div>
-            <div className="crown-city-list" aria-label="Confirmed service area">
-              <span>Aurora, Colorado</span>
-              <span>Denver, Colorado</span>
+            <div className="crown-city-list" aria-label="Service areas listed by Crown">
+              {serviceLocations.map((area) => (
+                <span key={`${area.city}-${area.state}`}>
+                  {area.city}, {area.state}
+                </span>
+              ))}
               <p>ZIP code confirmation required</p>
             </div>
           </div>
@@ -338,6 +381,44 @@ export default async function Home() {
               <p className="crown-request-note">
                 An inquiry is not a confirmed appointment.
               </p>
+              <dl className="crown-contact-details">
+                {contact.email && (
+                  <div>
+                    <dt>Email</dt>
+                    <dd><a href={`mailto:${contact.email}`}>{contact.email}</a></dd>
+                  </div>
+                )}
+                {contact.phone && (
+                  <div>
+                    <dt>Phone</dt>
+                    <dd>
+                      <a href={`tel:${contact.phone.replace(/[^\d+]/g, "")}`}>
+                        {contact.phone}
+                      </a>
+                    </dd>
+                  </div>
+                )}
+                {contact.alternatePhone && (
+                  <div>
+                    <dt>Additional phone</dt>
+                    <dd>
+                      <a href={`tel:${contact.alternatePhone.replace(/[^\d+]/g, "")}`}>
+                        {contact.alternatePhone}
+                      </a>
+                    </dd>
+                  </div>
+                )}
+                {contact.businessHours && (
+                  <div>
+                    <dt>Business hours</dt>
+                    <dd>{contact.businessHours}</dd>
+                  </div>
+                )}
+                <div>
+                  <dt>Service area</dt>
+                  <dd>Aurora and Denver, Colorado. ZIP-code confirmation required.</dd>
+                </div>
+              </dl>
             </div>
             <InquiryForm services={services} />
           </div>

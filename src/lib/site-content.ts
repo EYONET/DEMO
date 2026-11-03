@@ -9,6 +9,15 @@ export type ActiveServiceArea = Pick<
 export type PublicContactDetails = {
   email: string | null;
   phone: string | null;
+  alternatePhone: string | null;
+  businessHours: string | null;
+};
+
+const defaultPublicContactDetails: PublicContactDetails = {
+  email: "info@cleancrown.net",
+  phone: "983-456-4745",
+  alternatePhone: "(720) 757 1163",
+  businessHours: "Monday through Saturday, 8:00 AM–5:00 PM",
 };
 
 export type PublicHomeCopy = {
@@ -40,6 +49,18 @@ function getJsonString(value: Json, key: string): string | null {
   return typeof field === "string" && field.trim() ? field.trim() : null;
 }
 
+function getJsonStringOrDefault(value: Json, key: string, fallback: string): string | null {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return fallback;
+  }
+
+  if (!(key in value)) {
+    return fallback;
+  }
+
+  return getJsonString(value, key);
+}
+
 export async function getActiveServiceAreas(): Promise<ActiveServiceArea[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -68,14 +89,38 @@ export async function getPublicContactDetails(): Promise<PublicContactDetails> {
     throw new Error("Unable to load public contact details.", { cause: error });
   }
 
-  const email = data ? getJsonString(data.value, "email") : null;
-  const phone = data ? getJsonString(data.value, "phone") : null;
+  const email = data
+    ? getJsonStringOrDefault(data.value, "email", defaultPublicContactDetails.email ?? "")
+    : defaultPublicContactDetails.email;
+  const phone = data
+    ? getJsonStringOrDefault(data.value, "phone", defaultPublicContactDetails.phone ?? "")
+    : defaultPublicContactDetails.phone;
+  const alternatePhone = data
+    ? getJsonStringOrDefault(
+        data.value,
+        "alternatePhone",
+        defaultPublicContactDetails.alternatePhone ?? "",
+      )
+    : defaultPublicContactDetails.alternatePhone;
+  const businessHours = data
+    ? getJsonStringOrDefault(
+        data.value,
+        "businessHours",
+        defaultPublicContactDetails.businessHours ?? "",
+      )
+    : defaultPublicContactDetails.businessHours;
 
   return {
     email:
       email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : null,
     phone:
       phone && /^\+?[0-9().\-\s]{7,30}$/.test(phone) ? phone : null,
+    alternatePhone:
+      alternatePhone && /^\+?[0-9().\-\s]{7,30}$/.test(alternatePhone)
+        ? alternatePhone
+        : null,
+    businessHours:
+      businessHours && businessHours.length <= 160 ? businessHours : null,
   };
 }
 
