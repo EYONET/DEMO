@@ -5,12 +5,15 @@ import { signOutStaff } from "@/app/admin/actions";
 import {
   ContactSettingsForm,
   FaqNodeForm,
+  HomepageBeforeAfterPairForm,
+  HomepageGalleryImageForm,
   HomeCopySettingsForm,
   NewFaqNodeForm,
   ServiceAreaForm,
   ServiceForm,
 } from "@/app/admin/content/cms-forms";
 import { getPublicContactDetails, getPublicHomeCopy } from "@/lib/site-content";
+import { getHomepageImageUrl } from "@/lib/homepage-media";
 import { requireContentStaff } from "@/lib/staff-auth";
 
 export const metadata: Metadata = {
@@ -46,13 +49,21 @@ export default async function ContentManagementPage({
     { data: areas, error: areaError },
     { data: faqNodes, error: faqNodeError },
     { data: faqOptions, error: faqOptionError },
+    { data: galleryImages, error: galleryError },
+    { data: beforeAfterPairs, error: beforeAfterError },
     contact,
     homeCopy,
   ] = await Promise.all([
-    supabase.from("services").select("*").order("sort_order").order("title"),
+    supabase
+      .from("services")
+      .select("id, slug, category, title, summary, description, inclusions, exclusions, image_path, image_alt, sort_order, status, created_at, updated_at")
+      .order("sort_order")
+      .order("title"),
     supabase.from("service_areas").select("*").order("sort_order").order("city"),
     supabase.from("faq_nodes").select("*").order("sort_order").order("slug"),
     supabase.from("faq_options").select("*").order("sort_order"),
+    supabase.from("homepage_gallery_images").select("*").order("sort_order").order("created_at"),
+    supabase.from("homepage_before_after_pairs").select("*").order("sort_order").order("created_at"),
     getPublicContactDetails(),
     getPublicHomeCopy(),
   ]);
@@ -61,6 +72,8 @@ export default async function ContentManagementPage({
   if (areaError) throw new Error("Unable to load editable service areas.", { cause: areaError });
   if (faqNodeError) throw new Error("Unable to load FAQ questions.", { cause: faqNodeError });
   if (faqOptionError) throw new Error("Unable to load FAQ choices.", { cause: faqOptionError });
+  if (galleryError) throw new Error("Unable to load homepage gallery images.", { cause: galleryError });
+  if (beforeAfterError) throw new Error("Unable to load homepage before-and-after photos.", { cause: beforeAfterError });
 
   return (
     <main id="main" className="admin-page">
@@ -95,7 +108,7 @@ export default async function ContentManagementPage({
         <section className="cms-section" id="services">
           <div className="cms-section-heading">
             <div><span className="eyebrow">Public service pages</span><h2>Services</h2></div>
-            <p>Draft services stay private. Publishing makes their details visible on the site.</p>
+            <p>The six company-provided service categories are available below. Draft services stay private; publishing makes service details visible on the site.</p>
           </div>
           <div className="cms-grid">
             {services.map((service) => (
@@ -116,8 +129,8 @@ export default async function ContentManagementPage({
 
         <section className="cms-section" id="homepage">
           <div className="cms-section-heading">
-            <div><span className="eyebrow">Homepage</span><h2>Hero copy</h2></div>
-            <p>Copy is plain text; the app escapes it instead of accepting executable markup.</p>
+            <div><span className="eyebrow">Homepage</span><h2>Homepage settings</h2></div>
+            <p>Edit hero copy and control whether the project gallery sections are shown publicly.</p>
           </div>
           <article className="cms-card cms-narrow">
             <HomeCopySettingsForm {...homeCopy} />
@@ -137,6 +150,48 @@ export default async function ContentManagementPage({
               businessHours={contact.businessHours ?? ""}
             />
           </article>
+        </section>
+
+        <section className="cms-section" id="homepage-gallery">
+          <div className="cms-section-heading">
+            <div><span className="eyebrow">Homepage project photos</span><h2>Evidence of Craft gallery</h2></div>
+            <p>Add, replace, caption, reorder, or remove approved Crown project photos. Uploaded files are publicly readable even while this section is hidden; enable it in Homepage settings after adding images.</p>
+          </div>
+          <div className="cms-grid">
+            {galleryImages.map((image) => (
+              <article className="cms-card" key={image.id}>
+                <div className="cms-card-heading"><h3>{image.caption}</h3><span className="status-pill status-published">public when section is on</span></div>
+                <HomepageGalleryImageForm image={image} imageUrl={getHomepageImageUrl(image.image_path)} />
+              </article>
+            ))}
+            <article className="cms-card">
+              <div className="cms-card-heading"><h3>Add a gallery photo</h3><span className="status-pill status-closed">hidden until section is on</span></div>
+              <HomepageGalleryImageForm image={null} />
+            </article>
+          </div>
+        </section>
+
+        <section className="cms-section" id="homepage-before-after">
+          <div className="cms-section-heading">
+            <div><span className="eyebrow">Homepage project photos</span><h2>Before &amp; after pairs</h2></div>
+            <p>Upload authentic before-and-after photos as a pair, with descriptive alt text and a caption. Files are publicly readable even while this section is hidden; enable it in Homepage settings when ready.</p>
+          </div>
+          <div className="cms-grid">
+            {beforeAfterPairs.map((pair) => (
+              <article className="cms-card" key={pair.id}>
+                <div className="cms-card-heading"><h3>{pair.caption}</h3><span className="status-pill status-published">public when section is on</span></div>
+                <HomepageBeforeAfterPairForm
+                  pair={pair}
+                  beforeImageUrl={getHomepageImageUrl(pair.before_image_path)}
+                  afterImageUrl={getHomepageImageUrl(pair.after_image_path)}
+                />
+              </article>
+            ))}
+            <article className="cms-card">
+              <div className="cms-card-heading"><h3>Add a before-and-after pair</h3><span className="status-pill status-closed">hidden until section is on</span></div>
+              <HomepageBeforeAfterPairForm pair={null} />
+            </article>
+          </div>
         </section>
 
         <section className="cms-section" id="service-areas">

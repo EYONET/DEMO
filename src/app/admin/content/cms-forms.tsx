@@ -1,13 +1,22 @@
 "use client";
 
+import Image from "next/image";
 import { useActionState } from "react";
 import type { Database } from "@/lib/supabase/database.types";
 import {
+  legacyServiceCategoryValues,
+  serviceCategoryOptions,
+} from "@/lib/service-categories";
+import {
   deleteService,
   deleteFaqOption,
+  deleteHomepageBeforeAfterPair,
+  deleteHomepageGalleryImage,
   saveContactSettings,
   saveFaqNode,
   saveFaqOption,
+  saveHomepageBeforeAfterPair,
+  saveHomepageGalleryImage,
   saveHomeCopy,
   saveService,
   saveServiceArea,
@@ -16,10 +25,13 @@ import {
 } from "@/app/admin/content/actions";
 
 const emptyState: ContentActionState = {};
-type ServiceRow = Database["public"]["Tables"]["services"]["Row"];
+type ServiceRow = Omit<Database["public"]["Tables"]["services"]["Row"], "pricing_display">;
 type AreaRow = Database["public"]["Tables"]["service_areas"]["Row"];
 type FaqNodeRow = Database["public"]["Tables"]["faq_nodes"]["Row"];
 type FaqOptionRow = Database["public"]["Tables"]["faq_options"]["Row"];
+type GalleryImageRow = Database["public"]["Tables"]["homepage_gallery_images"]["Row"];
+type BeforeAfterPairRow = Database["public"]["Tables"]["homepage_before_after_pairs"]["Row"];
+const legacyServiceCategorySet: ReadonlySet<string> = new Set(legacyServiceCategoryValues);
 
 function Result({ state }: { state: ContentActionState }) {
   if (!state.message) return null;
@@ -51,9 +63,16 @@ function ServiceEditor({
         <label>URL slug<input name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" maxLength={100} defaultValue={service?.slug ?? ""} /></label>
       </div>
       <div className="form-row">
-        <label>Category<select name="category" defaultValue={service?.category ?? "residential"}>{[
-          ["residential", "Residential"], ["commercial", "Commercial"], ["deep", "Deep cleaning"], ["move_in", "Move-in"],
-        ].map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+        <label>Category<select name="category" defaultValue={service?.category ?? "car_detailing"}>
+          {service && legacyServiceCategorySet.has(service.category) && (
+            <optgroup label="Archived legacy service">
+              <option value={service.category}>Legacy category ({service.category})</option>
+            </optgroup>
+          )}
+          <optgroup label="Company-provided service list">
+            {serviceCategoryOptions.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+          </optgroup>
+        </select></label>
         <label>Publication status<select name="status" defaultValue={service?.status ?? "draft"}><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></label>
       </div>
       <label>Display order<input type="number" name="sort_order" min={0} max={10000} defaultValue={service?.sort_order ?? 0} /></label>
@@ -63,7 +82,6 @@ function ServiceEditor({
         <label>Inclusions <span className="optional">(one per line)</span><textarea name="inclusions" rows={4} maxLength={4000} defaultValue={stringList(service?.inclusions)} /></label>
         <label>Exclusions <span className="optional">(one per line)</span><textarea name="exclusions" rows={4} maxLength={4000} defaultValue={stringList(service?.exclusions)} /></label>
       </div>
-      <label>Approved public pricing label <span className="optional">(leave blank if not approved)</span><input name="pricing_display" maxLength={300} defaultValue={service?.pricing_display ?? ""} /></label>
       <Result state={state} />
       <button className="button button-dark" disabled={pending}>{pending ? "Saving…" : service ? "Save service" : "Add service"}</button>
     </form>
@@ -102,10 +120,120 @@ function ServiceImageForm({ service }: { service: ServiceRow }) {
       {service.image_path && <p>Current image is set. Uploading a replacement removes the previous file.</p>}
       <label>Image file<input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/avif" required /></label>
       <label>Descriptive alt text<input name="image_alt" required maxLength={300} defaultValue={service.image_alt ?? ""} /></label>
-      <p className="cms-help">JPEG, PNG, WebP, or AVIF; maximum 5 MB. Avoid images containing private customer information.</p>
+      <p className="cms-help">JPEG, PNG, WebP, or AVIF; maximum 5 MB. These files are publicly readable; upload only photos approved for public use and remove location metadata first.</p>
       <Result state={state} />
       <button className="button button-small button-outline" disabled={pending}>{pending ? "Uploading…" : "Upload image"}</button>
     </form>
+  );
+}
+
+function GalleryImageForm({
+  image,
+  imageUrl,
+}: {
+  image: GalleryImageRow | null;
+  imageUrl?: string;
+}) {
+  const [state, action, pending] = useActionState(saveHomepageGalleryImage, emptyState);
+  const [deleteState, deleteAction, deletePending] = useActionState(deleteHomepageGalleryImage, emptyState);
+
+  return (
+    <div className="cms-project-photo-editor">
+      {imageUrl && (
+        <Image
+          className="cms-project-photo-preview"
+          src={imageUrl}
+          alt={image?.image_alt ?? ""}
+          width={480}
+          height={320}
+          unoptimized
+        />
+      )}
+      <form className="cms-form" action={action}>
+        <input type="hidden" name="id" value={image?.id ?? ""} />
+        <label>Image file<input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/avif" required={!image} /></label>
+        <label>Descriptive alt text<input name="image_alt" required maxLength={300} defaultValue={image?.image_alt ?? ""} /></label>
+        <label>Caption<input name="caption" required maxLength={160} defaultValue={image?.caption ?? ""} /></label>
+        <label>Display order<input type="number" name="sort_order" min={0} max={10000} defaultValue={image?.sort_order ?? 0} /></label>
+        <p className="cms-help">JPEG, PNG, WebP, or AVIF; maximum 5 MB. These files are publicly readable even while the section is hidden. Upload only genuine Crown project photos approved for public use; remove location metadata and avoid faces, addresses, or private belongings.</p>
+        <Result state={state} />
+        <button className="button button-small button-outline" disabled={pending}>{pending ? "Saving…" : image ? "Save gallery image" : "Add gallery image"}</button>
+      </form>
+      {image && (
+        <form action={deleteAction} onSubmit={(event) => {
+          if (!window.confirm(`Delete the gallery image "${image.caption}"?`)) event.preventDefault();
+        }}>
+          <input type="hidden" name="id" value={image.id} />
+          <button className="cms-delete-button" type="submit" disabled={deletePending}>{deletePending ? "Deleting…" : "Delete image"}</button>
+          <Result state={deleteState} />
+        </form>
+      )}
+    </div>
+  );
+}
+
+function BeforeAfterPairForm({
+  pair,
+  beforeImageUrl,
+  afterImageUrl,
+}: {
+  pair: BeforeAfterPairRow | null;
+  beforeImageUrl?: string;
+  afterImageUrl?: string;
+}) {
+  const [state, action, pending] = useActionState(saveHomepageBeforeAfterPair, emptyState);
+  const [deleteState, deleteAction, deletePending] = useActionState(deleteHomepageBeforeAfterPair, emptyState);
+
+  return (
+    <div className="cms-project-photo-editor">
+      <div className="cms-project-photo-pair">
+        {beforeImageUrl && (
+          <Image
+            className="cms-project-photo-preview"
+            src={beforeImageUrl}
+            alt={pair?.before_image_alt ?? ""}
+            width={480}
+            height={320}
+            unoptimized
+          />
+        )}
+        {afterImageUrl && (
+          <Image
+            className="cms-project-photo-preview"
+            src={afterImageUrl}
+            alt={pair?.after_image_alt ?? ""}
+            width={480}
+            height={320}
+            unoptimized
+          />
+        )}
+      </div>
+      <form className="cms-form" action={action}>
+        <input type="hidden" name="id" value={pair?.id ?? ""} />
+        <div className="form-row">
+          <label>Before photo<input type="file" name="before_image" accept="image/jpeg,image/png,image/webp,image/avif" required={!pair} /></label>
+          <label>After photo<input type="file" name="after_image" accept="image/jpeg,image/png,image/webp,image/avif" required={!pair} /></label>
+        </div>
+        <div className="form-row">
+          <label>Before photo alt text<input name="before_image_alt" required maxLength={300} defaultValue={pair?.before_image_alt ?? ""} /></label>
+          <label>After photo alt text<input name="after_image_alt" required maxLength={300} defaultValue={pair?.after_image_alt ?? ""} /></label>
+        </div>
+        <label>Caption<input name="caption" required maxLength={160} defaultValue={pair?.caption ?? ""} /></label>
+        <label>Display order<input type="number" name="sort_order" min={0} max={10000} defaultValue={pair?.sort_order ?? 0} /></label>
+        <p className="cms-help">JPEG, PNG, WebP, or AVIF; each file maximum 5 MB. These files are publicly readable even while the section is hidden. Upload only genuine Crown project photos approved for public use; remove location metadata and avoid faces, addresses, or private belongings.</p>
+        <Result state={state} />
+        <button className="button button-small button-outline" disabled={pending}>{pending ? "Saving…" : pair ? "Save photo pair" : "Add photo pair"}</button>
+      </form>
+      {pair && (
+        <form action={deleteAction} onSubmit={(event) => {
+          if (!window.confirm(`Delete the before-and-after pair "${pair.caption}"?`)) event.preventDefault();
+        }}>
+          <input type="hidden" name="id" value={pair.id} />
+          <button className="cms-delete-button" type="submit" disabled={deletePending}>{deletePending ? "Deleting…" : "Delete pair"}</button>
+          <Result state={deleteState} />
+        </form>
+      )}
+    </div>
   );
 }
 
@@ -138,10 +266,14 @@ function HomeCopyForm({
   eyebrow,
   headline,
   introduction,
+  galleryEnabled,
+  beforeAfterEnabled,
 }: {
   eyebrow: string;
   headline: string;
   introduction: string;
+  galleryEnabled: boolean;
+  beforeAfterEnabled: boolean;
 }) {
   const [state, action, pending] = useActionState(saveHomeCopy, emptyState);
   return (
@@ -150,8 +282,14 @@ function HomeCopyForm({
       <label>Small heading<input name="eyebrow" required maxLength={120} defaultValue={eyebrow} /></label>
       <label>Main headline<input name="headline" required maxLength={240} defaultValue={headline} /></label>
       <label>Introduction<textarea name="introduction" required rows={4} maxLength={600} defaultValue={introduction} /></label>
+      <fieldset className="cms-fieldset">
+        <legend>Optional homepage sections</legend>
+        <p className="cms-help">Keep these sections hidden until approved Crown project photos are ready. You can enable them here later.</p>
+        <label className="cms-checkbox"><input type="checkbox" name="gallery_enabled" defaultChecked={galleryEnabled} /> Show the Evidence of Craft gallery</label>
+        <label className="cms-checkbox"><input type="checkbox" name="before_after_enabled" defaultChecked={beforeAfterEnabled} /> Show before-and-after photos</label>
+      </fieldset>
       <Result state={state} />
-      <button className="button button-dark" disabled={pending}>{pending ? "Saving…" : "Save homepage copy"}</button>
+      <button className="button button-dark" disabled={pending}>{pending ? "Saving…" : "Save homepage settings"}</button>
     </form>
   );
 }
@@ -285,12 +423,29 @@ export function HomeCopySettingsForm(props: {
   eyebrow: string;
   headline: string;
   introduction: string;
+  galleryEnabled: boolean;
+  beforeAfterEnabled: boolean;
 }) {
   return <HomeCopyForm {...props} />;
 }
 
 export function ServiceAreaForm({ area }: { area: AreaRow | null }) {
   return <AreaEditor area={area} />;
+}
+
+export function HomepageGalleryImageForm(props: {
+  image: GalleryImageRow | null;
+  imageUrl?: string;
+}) {
+  return <GalleryImageForm {...props} />;
+}
+
+export function HomepageBeforeAfterPairForm(props: {
+  pair: BeforeAfterPairRow | null;
+  beforeImageUrl?: string;
+  afterImageUrl?: string;
+}) {
+  return <BeforeAfterPairForm {...props} />;
 }
 
 export function FaqNodeForm(props: {

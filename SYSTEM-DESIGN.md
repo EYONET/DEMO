@@ -18,7 +18,7 @@ The implementation should proceed in small, demonstrable slices rather than atte
 ### Decisions already made
 
 - Build the full-stack application with **Next.js and Supabase**.
-- Use **English and U.S.-oriented presentation**, with prices represented in USD only after the business supplies approved U.S. pricing.
+- Use **English and U.S.-oriented presentation**. Public prices are not displayed; staff discusses pricing directly with customers after inquiry.
 - Use the owner-approved Crown Cleaning Solutions navy-and-gold redesign for public pages. The BrightNest design is historical.
 - Include the public website, quote/booking inquiry form, custom CMS, staff inquiry dashboard, media editing, and **Option A button-guided FAQ chatbot**.
 - Do **not** implement Option B, open-ended AI, an LLM, or a paid chatbot API.
@@ -35,7 +35,8 @@ These defaults allow implementation to start, but should be replaced or explicit
 | Business identity | Crown Cleaning Solutions is the owner-approved brand name. | Confirm the legal entity name and approved logo/assets before legal or operational use. |
 | Location | Owner-approved coverage wording: Aurora and Denver, Colorado; confirm ZIP codes with each inquiry. | Exact ZIP codes/neighborhoods, travel radius, and any additional cities. |
 | Language | English. | Additional languages, if any. |
-| Currency | USD display where approved prices are shown. | Real pricing and whether it is fixed, “starting at,” per-room, or estimate-only. |
+| Public pricing | No prices displayed on public pages. | Staff discusses prices directly with customers after inquiry. |
+| Satisfaction guarantee | Crown confirms a 100% satisfaction promise: customers should contact Crown within 48 hours if dissatisfied, and Crown will return to touch up the areas of concern. | Confirm contact channel and any exclusions before expanding or qualifying this promise. |
 | Public routes | Home, services hub, service detail templates, about, estimate request, contact. | Exact route/page count and final navigation. |
 | Form | Multi-step inquiry with contact, service, property/location, and optional notes/preferences. | Required fields, phone requirement, preferred-date question, consent wording. |
 | Staff | One owner/admin initially; additional staff can be added. | Named staff, their privileges, and who approves/publishes content. |
@@ -52,8 +53,8 @@ Do not invent real testimonials, certifications, customer counts, prices, respon
 
 The proposal calls for a responsive website with:
 
-- **Homepage:** clear hero and inquiry CTA; services; service expectations; cleaning approach/about; illustrative gallery; inquiry process; genuine-review placeholder; pricing guidance; confirmed Aurora/Denver coverage; estimate form; and the existing guided FAQ chatbot. Do not show unsupported statistics, testimonials, prices, credentials, or trust claims.
-- **Services hub:** residential, commercial, deep cleaning, and move-in services.
+- **Homepage:** clear hero and inquiry CTA; services; service expectations; cleaning approach/about; optional project gallery and before-and-after sections; inquiry process; genuine-review placeholder; confirmed Aurora/Denver coverage; estimate form; and the existing guided FAQ chatbot. Keep project-photo sections hidden until approved Crown project photos are added. Do not display prices or unsupported statistics, testimonials, credentials, or trust claims.
+- **Services hub:** Car Detailing, Carpet Cleaning, Upholstery Cleaning, Move-in / Move-out Cleaning, Residential Deep Cleaning, and Post-Construction Cleaning, in the company-provided order. Light and Deep Cleaning are informational options with a separate homepage section, not inquiry service choices; their scope is based on the client-provided checklist.
 - **Quote and booking system:** custom, multi-step estimate request form.
 - **Company information:** About Us, Addis Ababa service coverage, interactive map, and contact points.
 
@@ -61,7 +62,7 @@ For this U.S.-based project, “Addis Ababa” is replaced with a **verified U.S
 
 1. Home (`/`)
 2. Services hub (`/services`)
-3. Service detail (`/services/[slug]`, shared template for four service types)
+3. Service detail (`/services/[slug]`, shared template for the six selectable company-provided services)
 4. About and service area (`/about`)
 5. Estimate request (`/quote`)
 6. Contact (`/contact`)
@@ -73,7 +74,7 @@ The header/footer can link the quote and contact sections prominently. Confirm w
 The proposal requires:
 
 - Visual media editor for hero artwork, service gallery images, and team photos.
-- Content management for service descriptions, promotional text, and pricing structures.
+- Content management for service descriptions and promotional text. Public prices are not displayed.
 - Centralized dashboard for submitted booking/estimate inquiries.
 - Role-based login security and database backup controls.
 
@@ -81,6 +82,7 @@ System interpretation:
 
 - Staff authenticate before any admin page or data is available.
 - Authorized staff edit structured content and images, preview it, then publish it.
+- The homepage gallery and before-and-after sections use separate CMS-managed collections. Content staff can upload, replace, caption, reorder, and remove genuine Crown project photos; before-and-after content must be stored as complete pairs. These sections default to hidden and remain hidden if their corresponding collection is empty. Do not use stock images as project evidence; upload only photos approved for public use.
 - Authorized staff view inquiry records, inspect details, and update their workflow status.
 - Admin users can view backup configuration/status and the documented recovery procedure. Supabase performs the underlying database backups according to the selected plan; the app must not falsely claim to create or restore backups itself.
 - The UI will explain platform backup limitations and link staff to the relevant Supabase project controls where possible.
@@ -129,7 +131,7 @@ These are Ethiopia/ETB proposal figures. **They are not a U.S. project quote, U.
 ### In scope for the MVP
 
 - Responsive public pages for all confirmed page templates.
-- Four proposal service categories: residential, commercial, deep cleaning, and move-in cleaning. Move-out cleaning may be included if the owner confirms it as part of the same service.
+- The company-approved selectable service list supersedes the proposal categories: Car Detailing, Carpet Cleaning, Upholstery Cleaning, Move-in / Move-out Cleaning, Residential Deep Cleaning, and Post-Construction Cleaning. Light and Deep Cleaning are informational homepage content, not inquiry choices. Use client-provided scope details for those options only; keep pricing unpublished until confirmed.
 - A multi-step quote/booking **inquiry** form with validation and a reliable persisted result.
 - Customer confirmation after successful persistence and understandable failure handling.
 - Staff sign-in, CMS, media management, inquiries dashboard, and statuses.
@@ -259,7 +261,7 @@ Use a honeypot and request throttling as the baseline; decide on a CAPTCHA/Turns
 | Route | Purpose | Data |
 |---|---|---|
 | `/` | Hero, calls to action, service highlights, approved stats/testimonials, how it works, FAQ entry point. | Published site settings/content, service summaries. |
-| `/services` | Services hub covering residential, commercial, deep, and move-in cleaning. | Published services. |
+| `/services` | Services hub for the six selectable company-provided services in their approved order. | Published services. |
 | `/services/[slug]` | Shared detail template for each published service. | One published service record. |
 | `/about` | Company story, confirmed coverage, map or map link, approved company details. | Published content and service-area entries. |
 | `/quote` | Multi-step quote/booking inquiry flow. | Published service choices and privacy text. |
@@ -269,7 +271,7 @@ Use a honeypot and request throttling as the baseline; decide on a CAPTCHA/Turns
 | `/admin/inquiries` | Protected inquiry list and filters. | Authorized inquiries. |
 | `/admin/inquiries/[id]` | Protected inquiry detail/status update. | One authorized inquiry. |
 | `/admin/content` | Manage page sections, settings, and media. | CMS tables/Storage. |
-| `/admin/services` | Create/edit/reorder/preview service content and pricing display. | Service records. |
+| `/admin/services` | Create/edit/reorder/preview service content. | Service records. |
 | `/admin/faqs` | Manage the Option A decision tree and validate links. | FAQ nodes/options. |
 | `/admin/operations` | Display backup configuration/last verified date and recovery instructions. | Operational metadata/documentation; platform backup controls remain in Supabase. |
 
@@ -309,7 +311,7 @@ Keep the form short enough to complete, show progress, and let visitors go back 
 
 **Step 1 — Service**
 
-- Requested service: residential, commercial, deep, move-in (and move-out if approved), or “not sure.”
+- Requested service: one of the six selectable company-provided services, or “not sure.”
 - Conditional home/business type or other short scope information, only if necessary to prepare an estimate.
 - Do not ask for an exact price assumption or suggest an appointment is reserved.
 
@@ -385,7 +387,7 @@ Editors can update:
 
 - Homepage hero title/copy/CTA, promotions, approved highlight stats, testimonials (with authenticity/permission reminder), and media references.
 - About content, company contact information, business hours, and coverage details.
-- Services hub ordering and each service's title, description, inclusions, exclusions, media, and approved pricing display.
+- Services hub ordering and each service's title, description, inclusions, exclusions, and media. Do not edit or display prices.
 - Estimate form explanatory/privacy copy and service labels where relevant.
 - SEO title/description and social preview fields for public pages.
 
@@ -440,7 +442,7 @@ Do **not** add a fake “Backup now” button, assume a database backup includes
 
 ### 9.1 Visitor behavior
 
-- Initial greeting offers top-level buttons such as Services, Pricing, Scheduling, Service Area, Preparation, and Contact.
+- Initial greeting offers top-level buttons such as Services, Scheduling, Service Area, Preparation, and Request an Estimate.
 - A button selection appends the selected question, displays the demo's three-second thinking animation, then appends a predefined answer and relevant follow-up choices.
 - Each branch offers a return to main topics; the visitor can close/reopen the panel and navigate to the estimate/contact flow.
 - A fallback branch says it cannot answer that question and directs the visitor to contact/request an estimate.
@@ -471,10 +473,9 @@ Publishing should be transactional or versioned so visitors never receive a half
 
 Initial CMS seed should cover, with owner-approved responses:
 
-- Which residential/commercial/deep/move-in services are offered?
+- Which of the six selectable company-provided services would the visitor like to discuss?
 - What is included in each service?
-- Is pricing per room or based on an estimate?
-- What factors affect the price? Are estimates free?
+- How can a visitor submit an estimate request and receive staff follow-up?
 - What U.S. cities/ZIP codes are served?
 - How does an inquiry/booking request work, and is a date confirmed?
 - What happens after the request is submitted?
@@ -483,7 +484,7 @@ Initial CMS seed should cover, with owner-approved responses:
 - How are pets, access, fragile belongings, and special instructions handled?
 - How can a visitor reach staff if the FAQ does not answer their question?
 
-The current U.S. service area, pricing, supplies, staffing, pet policies, and operations are unknown. Use cautious fallback copy until the owner approves exact answers.
+The current U.S. service area, pricing practices, supplies, staffing, pet policies, and operations are unknown. Do not publish prices; direct pricing questions to staff follow-up.
 
 ---
 
@@ -499,10 +500,10 @@ The following is a logical initial model, not executable migration SQL. Implemen
 |---|---|
 | `id` | UUID primary key |
 | `slug` | Unique, URL-safe slug |
-| `category` | Constrained type: residential, commercial, deep, move_in (move_out only if approved) |
+| `category` | Constrained type for the six selectable company-provided services; legacy categories remain only on archived records. |
 | `title`, `summary`, `description` | Non-empty approved copy |
 | `inclusions`, `exclusions` | Structured JSON/text array after schema validation |
-| `pricing_display` | Nullable approved public label/price; do not invent a price |
+| `pricing_display` | Legacy nullable field retained for data compatibility; not editable and excluded from public and staff API reads. |
 | `image_path`, `image_alt` | Nullable public Storage reference and alt text |
 | `sort_order` | Integer |
 | `status` | Draft/published/archived |
@@ -712,14 +713,14 @@ RLS policies that allow anonymous insert are a deliberate public surface. Restri
 ### 14.2 MVP acceptance checklist
 
 - [ ] All approved proposal sections are available: home/hero, service pages, service area/about/map, quote request, contact, CMS, inquiry dashboard, media editor, and Option A FAQ.
-- [ ] Residential, commercial, deep, and move-in services can be represented and displayed.
+- [ ] The six selectable company-provided services can be represented and displayed in the specified order. Light/Deep Cleaning details are presented separately and not selectable in inquiries.
 - [ ] Staff can sign in; no public staff registration exists.
 - [ ] Unauthorized users cannot open admin pages/actions or read private inquiries.
 - [ ] The form validates on the server and stores a successful inquiry exactly once per accepted submission.
 - [ ] Failed persistence never appears as success and leaves the user's input available to retry.
 - [ ] Status/notes do not come from or become editable by a public visitor.
 - [ ] Staff can find, view, and update inquiry workflow status.
-- [ ] Staff can edit service descriptions, promotions, approved pricing display, and images.
+- [ ] Staff can edit service descriptions, promotions, and images; no public prices are displayed.
 - [ ] FAQ entries can be maintained by staff; each active path is valid and fallback works.
 - [ ] FAQ is clearly guided/predefined; there are no AI model/API calls.
 - [ ] No invented U.S. city, price, testimonial, or operational promise is live.
@@ -782,7 +783,7 @@ Each slice should be reviewed in the running app before moving on.
 - Add responsive content and metadata.
 - Keep U.S. location/pricing placeholders unpublished until approved.
 
-**Exit checks:** All proposal content areas exist, including residential/commercial/deep/move-in services; no unsupported claims display.
+**Exit checks:** All proposal content areas exist, including the six company-approved selectable services; no unsupported claims display.
 
 ### Slice 4 — Secure quote/booking inquiry
 
@@ -922,7 +923,7 @@ Pre-development checklist:
 | Proposal item | System location / implementation |
 |---|---|
 | Dynamic homepage hero, CTA, highlights, testimonials | Public homepage and controlled published content; claims require approval. |
-| Residential, commercial, deep, move-in services | Services table, hub, shared detail route, and CMS editor. |
+| Six company-approved services | Services table, hub, shared detail route, and CMS editor. |
 | Custom multi-step estimate request | `/quote` flow, server validation, inquiry storage, staff follow-up. |
 | About Us, service-area coverage, interactive map, contacts | `/about`, `/contact`, verified service-area settings, map/link. |
 | Visual media editor for hero/gallery/team | CMS and approved Supabase Storage bucket. |

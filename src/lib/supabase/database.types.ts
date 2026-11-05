@@ -123,6 +123,72 @@ export type Database = {
           },
         ]
       }
+      homepage_before_after_pairs: {
+        Row: {
+          after_image_alt: string
+          after_image_path: string
+          before_image_alt: string
+          before_image_path: string
+          caption: string
+          created_at: string
+          id: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          after_image_alt: string
+          after_image_path: string
+          before_image_alt: string
+          before_image_path: string
+          caption: string
+          created_at?: string
+          id?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          after_image_alt?: string
+          after_image_path?: string
+          before_image_alt?: string
+          before_image_path?: string
+          caption?: string
+          created_at?: string
+          id?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      homepage_gallery_images: {
+        Row: {
+          caption: string
+          created_at: string
+          id: string
+          image_alt: string
+          image_path: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          caption: string
+          created_at?: string
+          id?: string
+          image_alt: string
+          image_path: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          caption?: string
+          created_at?: string
+          id?: string
+          image_alt?: string
+          image_path?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       inquiries: {
         Row: {
           city: string | null
@@ -414,7 +480,19 @@ export type Database = {
       content_status: "draft" | "published" | "archived"
       faq_action: "quote" | "contact" | "end"
       inquiry_status: "new" | "contacted" | "quoted" | "scheduled" | "closed"
-      service_category: "residential" | "commercial" | "deep" | "move_in"
+      service_category:
+        | "residential"
+        | "commercial"
+        | "deep"
+        | "move_in"
+        | "car_detailing"
+        | "carpet_cleaning"
+        | "upholstery_cleaning"
+        | "move_in_move_out"
+        | "residential_deep"
+        | "post_construction"
+        | "light_cleaning"
+        | "deep_cleaning"
       staff_role: "admin" | "content_editor" | "inquiry_manager"
     }
     CompositeTypes: {
@@ -549,7 +627,20 @@ export const Constants = {
       content_status: ["draft", "published", "archived"],
       faq_action: ["quote", "contact", "end"],
       inquiry_status: ["new", "contacted", "quoted", "scheduled", "closed"],
-      service_category: ["residential", "commercial", "deep", "move_in"],
+      service_category: [
+        "residential",
+        "commercial",
+        "deep",
+        "move_in",
+        "car_detailing",
+        "carpet_cleaning",
+        "upholstery_cleaning",
+        "move_in_move_out",
+        "residential_deep",
+        "post_construction",
+        "light_cleaning",
+        "deep_cleaning",
+      ],
       staff_role: ["admin", "content_editor", "inquiry_manager"],
     },
   },

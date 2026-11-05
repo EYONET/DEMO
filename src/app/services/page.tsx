@@ -8,7 +8,7 @@ import { getPublishedServices } from "@/lib/services";
 export const metadata: Metadata = {
   title: "Cleaning Services | Crown Cleaning Solutions",
   description:
-    "Explore cleaning services listed by Crown Cleaning Solutions.",
+    "Explore six services from Crown Cleaning Solutions in Aurora and Denver.",
 };
 
 export default async function ServicesPage() {
@@ -24,8 +24,9 @@ export default async function ServicesPage() {
             <div className="eyebrow"><span className="eyebrow-dot" /> Crown Cleaning Solutions</div>
             <h1>Cleaning services<br /><span>for your space.</span></h1>
             <p className="page-lead">
-              Explore the service options currently listed. Final scope and
-              availability are confirmed with the business.
+              Explore the six services listed by Crown Cleaning Solutions.
+              Service details, scope, and availability are confirmed with the
+              team.
             </p>
           </div>
         </section>

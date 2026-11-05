@@ -7,7 +7,7 @@ import { getActiveServiceAreas } from "@/lib/site-content";
 export const metadata: Metadata = {
   title: "About | Crown Cleaning Solutions",
   description:
-    "Learn about regular and deep cleaning services in Aurora and Denver, Colorado.",
+    "Learn about Crown Cleaning Solutions and its six services in Aurora and Denver. ZIP-code confirmation required.",
 };
 
 export default async function AboutPage() {
@@ -23,8 +23,8 @@ export default async function AboutPage() {
             <div className="eyebrow"><span className="eyebrow-dot" /> About Crown</div>
             <h1>A clean that fits<br /><span>what you need.</span></h1>
             <p className="page-lead">
-              Crown Cleaning Solutions serves customers in the Aurora and
-              Denver, Colorado area. Share your ZIP code so the team can confirm
+              Crown Cleaning Solutions serves Aurora and Denver, Colorado, and
+              may serve more areas. Share your ZIP code so the team can confirm
               whether your location is within the service area.
             </p>
           </div>
@@ -32,24 +32,31 @@ export default async function AboutPage() {
         <section className="section about-page-section crown-about-section">
           <div className="container about-page-grid">
             <article className="about-story">
-              <div className="eyebrow">Regular and deep cleaning</div>
-              <h2>Everyday upkeep or a deeper clean.</h2>
+              <div className="eyebrow">Company-listed services</div>
+              <h2>Cleaning services for different needs.</h2>
               <p>
-                Regular cleaning focuses on everyday upkeep, such as wiping
-                surfaces, cleaning bathrooms, and vacuuming floors. Deep
-                cleaning is more detailed and targets built-up dirt and areas
-                that may not be included in a standard cleaning.
+                The company lists Car Detailing, Carpet Cleaning, Upholstery
+                Cleaning, Move-in / Move-out Cleaning, Residential Deep
+                Cleaning, and Post-Construction Cleaning.
               </p>
-              <p>We can help you choose the right service.</p>
-              <Link className="button button-outline" href="/services">
-                Explore services <span aria-hidden="true">↗</span>
-              </Link>
+              <p>
+                Contact the team to discuss the service scope, coverage, and
+                availability for your request.
+              </p>
+              <div className="about-story-actions">
+                <Link className="button button-outline" href="/services">
+                  Explore services <span aria-hidden="true">↗</span>
+                </Link>
+                <Link className="button button-dark" href="/#quote">
+                  Request an estimate <span aria-hidden="true">↗</span>
+                </Link>
+              </div>
             </article>
             <aside className="service-area-panel" aria-labelledby="service-area-heading">
               <span className="eyebrow">Where we work</span>
               <h2 id="service-area-heading">Service areas</h2>
               <p>
-                We serve customers in the Aurora and Denver, Colorado area.
+                We serve Aurora and Denver, Colorado, and may serve more areas.
                 Please share your ZIP code so we can confirm whether your
                 location is within our service area.
               </p>

@@ -24,13 +24,17 @@ export type PublicHomeCopy = {
   eyebrow: string;
   headline: string;
   introduction: string;
+  galleryEnabled: boolean;
+  beforeAfterEnabled: boolean;
 };
 
 const defaultHomeCopy: PublicHomeCopy = {
   eyebrow: "Serving Aurora and Denver, Colorado",
   headline: "The right clean for your space.",
   introduction:
-    "Regular cleaning focuses on everyday upkeep, such as wiping surfaces, cleaning bathrooms, and vacuuming floors. Deep cleaning is more detailed and targets built-up dirt and areas that may not be included in a standard cleaning. We can help you choose the right service.",
+    "Explore Car Detailing, Carpet Cleaning, Upholstery Cleaning, Move-in / Move-out Cleaning, Residential Deep Cleaning, and Post-Construction Cleaning. Share your request with the team to discuss service details.",
+  galleryEnabled: false,
+  beforeAfterEnabled: false,
 };
 
 const legacyDemoHomeCopy: PublicHomeCopy = {
@@ -38,6 +42,8 @@ const legacyDemoHomeCopy: PublicHomeCopy = {
   headline: "Come home to a brighter kind of clean.",
   introduction:
     "Thoughtful home cleaning that gives you back your time—and makes your space feel like your favorite place.",
+  galleryEnabled: false,
+  beforeAfterEnabled: false,
 };
 
 function getJsonString(value: Json, key: string): string | null {
@@ -47,6 +53,15 @@ function getJsonString(value: Json, key: string): string | null {
 
   const field = value[key];
   return typeof field === "string" && field.trim() ? field.trim() : null;
+}
+
+function getJsonBoolean(value: Json, key: string, fallback: boolean): boolean {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return fallback;
+  }
+
+  const field = value[key];
+  return typeof field === "boolean" ? field : fallback;
 }
 
 function getJsonStringOrDefault(value: Json, key: string, fallback: string): string | null {
@@ -143,6 +158,23 @@ export async function getPublicHomeCopy(): Promise<PublicHomeCopy> {
   const eyebrow = getJsonString(data.value, "eyebrow");
   const headline = getJsonString(data.value, "headline");
   const introduction = getJsonString(data.value, "introduction");
+  const galleryEnabled = getJsonBoolean(data.value, "gallery_enabled", false);
+  const beforeAfterEnabled = getJsonBoolean(data.value, "before_after_enabled", false);
+  const [galleryResult, beforeAfterResult] = await Promise.all([
+    galleryEnabled
+      ? supabase.from("homepage_gallery_images").select("id", { count: "exact", head: true })
+      : Promise.resolve({ count: 0, error: null }),
+    beforeAfterEnabled
+      ? supabase.from("homepage_before_after_pairs").select("id", { count: "exact", head: true })
+      : Promise.resolve({ count: 0, error: null }),
+  ]);
+
+  if (galleryResult.error) {
+    throw new Error("Unable to verify homepage gallery visibility.", { cause: galleryResult.error });
+  }
+  if (beforeAfterResult.error) {
+    throw new Error("Unable to verify before-and-after section visibility.", { cause: beforeAfterResult.error });
+  }
 
   return {
     eyebrow:
@@ -157,5 +189,7 @@ export async function getPublicHomeCopy(): Promise<PublicHomeCopy> {
       introduction === legacyDemoHomeCopy.introduction
         ? defaultHomeCopy.introduction
         : introduction ?? defaultHomeCopy.introduction,
+    galleryEnabled: galleryEnabled && (galleryResult.count ?? 0) > 0,
+    beforeAfterEnabled: beforeAfterEnabled && (beforeAfterResult.count ?? 0) > 0,
   };
 }

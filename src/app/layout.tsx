@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Crown Cleaning Solutions | Cleaning in Aurora & Denver",
+  title: "Crown Cleaning Solutions | Aurora, Denver & More",
   description:
-    "Explore regular and deep cleaning services in the Aurora and Denver, Colorado area.",
+    "Explore six cleaning services in Aurora and Denver.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

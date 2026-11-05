@@ -1,12 +1,15 @@
 import Link from "next/link";
 import MobileNavigation from "@/components/mobile-navigation";
+import { getPublicHomeCopy } from "@/lib/site-content";
 
-export default function SiteHeader() {
+export default async function SiteHeader() {
+  const homeCopy = await getPublicHomeCopy();
+
   return (
     <>
       <div className="crown-ticker">
         <div className="container crown-ticker-inner">
-          <span>Cleaning services in Aurora and Denver, Colorado</span>
+          <span>Aurora, Denver, and more areas · ZIP-code confirmation required</span>
           <Link href="/#quote">Request an estimate <span aria-hidden="true">↗</span></Link>
         </div>
       </div>
@@ -21,7 +24,7 @@ export default function SiteHeader() {
             </span>
             <span>Crown <span className="brand-light">Cleaning Solutions</span></span>
           </Link>
-          <MobileNavigation />
+          <MobileNavigation showBeforeAfter={homeCopy.beforeAfterEnabled} />
         </div>
       </header>
     </>

@@ -107,15 +107,16 @@ The design is a single scrolling landing page with anchor navigation.
 
 ### 5.3 Services
 
-Three cards present the initial service categories:
+The current company-provided service list, in order, is:
 
-1. Home cleaning.
-2. Deep cleaning.
-3. Move-in and move-out cleaning.
+1. Car Detailing.
+2. Carpet Cleaning.
+3. Upholstery Cleaning.
+4. Move-in / Move-out Cleaning.
+5. Residential Deep Cleaning.
+6. Post-Construction Cleaning.
 
-Each card uses a soft-tinted icon, short benefit-led description, and link to the estimate section. The middle card has a slightly distinct pale-green background to create visual rhythm without making it a different product.
-
-Service list, inclusions, frequency options, availability, and final wording must be verified with the business before launch.
+Use the approved service names without implying unconfirmed inclusions, availability, or prices. The earlier three-card service lineup below is historical static-demo content, not the current catalog.
 
 ### 5.4 “How it works”
 

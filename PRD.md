@@ -58,8 +58,8 @@ The implementation should use the Supabase public/publishable client key only in
 
 Provide five agreed page templates/areas:
 
-1. **Home:** Hero and estimate CTA; services; service expectations; about/cleaning approach; illustrative gallery; inquiry process; genuine-review placeholder; pricing guidance; confirmed service area; estimate form; and the guided FAQ chatbot. Do not substitute fabricated reviews, statistics, or trust claims.
-2. **Services:** Service hub for residential, commercial, deep-cleaning, and move-in cleaning. Individual service detail routes may use a shared template.
+1. **Home:** Hero and estimate CTA; services; service expectations; about/cleaning approach; optional project gallery and before-and-after sections; inquiry process; genuine-review placeholder; confirmed service area; estimate form; and the guided FAQ chatbot. Keep project-photo sections hidden until genuine Crown project photos are approved for publication. Do not display prices or substitute fabricated reviews, statistics, or trust claims.
+2. **Services:** Service hub for Car Detailing, Carpet Cleaning, Upholstery Cleaning, Move-in / Move-out Cleaning, Residential Deep Cleaning, and Post-Construction Cleaning. Individual service detail routes use a shared template. Light and Deep Cleaning are described separately on the homepage and are not selectable inquiry services; their recommendations, inclusions, and add-ons are based on client-provided details.
 3. **About:** Company information, confirmed local service coverage, and an interactive map or map link.
 4. **Quote / booking request:** A clear, validated form for collecting customer inquiries.
 5. **Contact:** Contact channels and relevant service/contact information.
@@ -72,6 +72,7 @@ The proposal says “5 custom pages” but separately describes several service 
 - Layouts adapt to mobile, tablet, and desktop viewports.
 - Each service is clearly described and its content can be updated by authorized staff.
 - Contact and service-area details are visible and maintained through the CMS where practical.
+- Publish Crown's approved 100% Satisfaction Guarantee: customers should contact Crown within 48 hours if dissatisfied, and Crown will return to touch up the areas of concern.
 
 ### 6.2 Quote and booking inquiry form
 
@@ -95,7 +96,7 @@ The proposal says “5 custom pages” but separately describes several service 
 
 - Display a clearly labeled chatbot launcher on public pages.
 - Guide visitors through menus of clickable choices using a predefined decision tree.
-- Provide approved answers for common questions, including services, indicative pricing/per-room information, and coverage areas.
+- Provide approved answers for common questions, including services and coverage areas. Do not publish prices; direct visitors to submit an inquiry for staff follow-up.
 - Offer a route to the inquiry form or contact channel when the FAQ does not answer the visitor's question.
 - Make FAQ content easy for staff to maintain, or provide an explicitly documented initial update process.
 - Clearly indicate that responses are predefined and do not imply that the bot understands unrestricted free text.
@@ -110,7 +111,8 @@ The proposal says “5 custom pages” but separately describes several service 
 ### 6.4 Admin CMS and inquiry management
 
 - Require authenticated staff access.
-- Allow authorized staff to edit homepage/promotional text, service descriptions, pricing information, and images used by the site.
+- Allow authorized staff to edit homepage/promotional text, service descriptions, and images used by the site.
+- Let content staff manage homepage gallery images and complete before-and-after pairs, including captions, alt text, ordering, replacement, and removal. Show each section only when enabled and when it contains media; require customer permission for project photos.
 - Provide an inquiry dashboard with relevant customer details, submission time, and a manageable status (for example: new, contacted, closed).
 - Support secure image upload and replacement if Supabase Storage is used.
 - Apply RLS policies so unauthenticated visitors cannot access admin content or inquiry records.
@@ -134,7 +136,7 @@ The proposal says “5 custom pages” but separately describes several service 
 
 Proposed logical records (final schema to be designed during implementation):
 
-- **Services/content:** public service details, pricing text, and display order.
+- **Services/content:** public service details and display order. Prices are not displayed publicly.
 - **Site content:** editable copy, promotional content, and media references.
 - **FAQ nodes/options:** chatbot prompts, answer text, and links to subsequent choices or fallback actions.
 - **Inquiries:** customer-provided details, requested service, message/preferences, submission timestamp, and staff-managed status.
@@ -154,14 +156,14 @@ Define retention, deletion, and access rules for customer inquiries before launc
 ## 9. Assumptions and decisions to confirm
 
 1. Confirm the five page templates/routes and whether service detail pages count as additional pages.
-2. Confirm business name, logo, brand direction, images, testimonials, contact details, and approved service/pricing content.
+2. Confirm business name, logo, brand direction, images, testimonials, contact details, service content, and internal quote practices.
 3. Approve inquiry fields and whether users should be able to select a preferred date/time (request only, not live availability).
 4. Confirm launch language(s); this draft assumes English-first content.
 5. Confirm the U.S. city/state, map provider/link, and exact service-area coverage.
 6. Identify admin users and decide who can publish content and manage inquiries.
 7. Confirm the hosting/deployment provider, domain ownership, and Supabase project/region.
 8. Confirm privacy notice, inquiry retention period, backup ownership, and any applicable local compliance requirements.
-9. Confirm whether “pricing per room” means fixed published prices or indicative text subject to assessment.
+9. Public pricing is not displayed; price discussions happen through staff follow-up on inquiries.
 
 ## 10. Delivery boundary
 

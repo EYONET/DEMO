@@ -7,7 +7,7 @@ import { getPublicContactDetails } from "@/lib/site-content";
 export const metadata: Metadata = {
   title: "Contact | Crown Cleaning Solutions",
   description:
-    "Contact Crown Cleaning Solutions or request an estimate for cleaning in Aurora or Denver.",
+    "Contact Crown Cleaning Solutions about its six cleaning services in Aurora and Denver.",
 };
 
 export default async function ContactPage() {
@@ -23,9 +23,9 @@ export default async function ContactPage() {
             <div className="eyebrow"><span className="eyebrow-dot" /> Get in touch</div>
             <h1>We’d be glad<br /><span>to hear from you.</span></h1>
             <p className="page-lead">
-              Ask about regular or deep cleaning, or share your ZIP code so the
-              team can confirm whether your location is within the Aurora and
-              Denver service area.
+              Ask about one of the listed cleaning services, or share your ZIP
+              code so the team can confirm whether your location is within
+              Aurora, Denver, or more areas we may serve.
             </p>
           </div>
         </section>

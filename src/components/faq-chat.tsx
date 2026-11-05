@@ -25,10 +25,9 @@ const demoFaqTree: Record<string, FaqNode> = {
   main: {
     prompt: "What would you like to know about?",
     options: [
-      { label: "Cleaning services", answer: "I can help you explore the cleaning options shown in this demo.", next: "services" },
-      { label: "Pricing & estimates", answer: "Happy to help with estimates. Exact prices have not been set for this demo.", next: "pricing" },
+      { label: "Cleaning services", answer: "I can help you explore the six services listed by the company.", next: "services" },
       { label: "Scheduling & booking", answer: "I can explain how an estimate request works and what happens next.", next: "booking" },
-      { label: "Service area", answer: "The business location has not been confirmed yet. I can explain how to check availability.", next: "area" },
+      { label: "Service area", answer: "The team can confirm service coverage when you share your ZIP code.", next: "area" },
       { label: "Preparing for a clean", answer: "Let’s go over a few common preparation questions.", next: "preparation" },
       { label: "Request an estimate", answer: "Share a few details using the estimate request form. The team will follow up; a request is not an appointment.", action: "quote" },
     ],
@@ -36,51 +35,12 @@ const demoFaqTree: Record<string, FaqNode> = {
   services: {
     prompt: "Which service would you like to learn about?",
     options: [
-      { label: "Residential cleaning", answer: "Residential cleaning is for regular home upkeep. The exact checklist and visit options need to be confirmed with the business.", next: "home" },
-      { label: "Commercial cleaning", answer: "Commercial cleaning can be tailored to a workplace. Business types, scope, and availability will be confirmed by the team.", next: "commercial" },
-      { label: "Deep cleaning", answer: "Deep cleaning is intended as a more detailed refresh. Ask the team to confirm the checklist and estimate.", next: "deep" },
-      { label: "Move-in cleaning", answer: "Move-in cleaning helps prepare a home for its next chapter. Share the property condition and timing with the team.", next: "move" },
-    ],
-  },
-  home: {
-    prompt: "What else about residential cleaning can I help with?",
-    options: [
-      { label: "What is the difference between regular and deep cleaning?", answer: "Regular cleaning focuses on everyday upkeep, such as wiping surfaces, cleaning bathrooms, and vacuuming floors. Deep cleaning is more detailed and targets built-up dirt and areas that may not be included in a standard cleaning. We can help you choose the right service.", next: "home" },
-      { label: "Can I request recurring visits?", answer: "You can share your preferred frequency with the team. Availability and schedules need to be confirmed.", next: "booking" },
-      { label: "Request an estimate", answer: "Use the estimate request form to share a few details. This development project is for synthetic test data only.", action: "quote" },
-    ],
-  },
-  commercial: {
-    prompt: "What would you like to know about commercial cleaning?",
-    options: [
-      { label: "What businesses do you serve?", answer: "The commercial customer types have not been confirmed. The team can discuss your workplace and needs.", next: "commercial" },
-      { label: "Can service be scheduled after hours?", answer: "Business hours and scheduling options are not set in this demo. Ask the team to confirm what they can accommodate.", next: "booking" },
-      { label: "How do I discuss a workplace?", answer: "Use the estimate request form to tell the team about your workplace. A request is not an appointment.", action: "quote" },
-    ],
-  },
-  deep: {
-    prompt: "What would you like to know about a deep clean?",
-    options: [
-      { label: "How is deep cleaning different?", answer: "Deep cleaning is more detailed and targets built-up dirt and areas that may not be included in a standard cleaning. We can help you choose the right service.", next: "home" },
-      { label: "How long does it take?", answer: "Timing depends on property size, condition, and requested tasks. The team can estimate this after learning more.", next: "pricing" },
-      { label: "Can I request a quote?", answer: "You can use the estimate request form. This development project is for synthetic test data only.", action: "quote" },
-    ],
-  },
-  move: {
-    prompt: "What would help with your move-in clean?",
-    options: [
-      { label: "What details should I share?", answer: "The property size, condition, target date, and any requested tasks help the team prepare an estimate.", next: "booking" },
-      { label: "Are move-out cleans available?", answer: "Move-out service is not confirmed yet. The business should approve this option before it is advertised.", next: "services" },
-      { label: "Request an estimate", answer: "Use the estimate request form to share your needs. A request is not a confirmed appointment.", action: "quote" },
-    ],
-  },
-  pricing: {
-    prompt: "What would you like to know about pricing?",
-    options: [
-      { label: "Is pricing per room?", answer: "No room-by-room prices are confirmed. Share your service and property details with the business for an accurate estimate.", next: "booking" },
-      { label: "What affects an estimate?", answer: "Service type, property size and condition, location, and requested tasks may affect a quote. The business must confirm its pricing method.", next: "pricing" },
-      { label: "Are estimates free?", answer: "The demo describes a free estimate, but the actual business estimate policy still needs confirmation.", next: "booking" },
-      { label: "Request an estimate", answer: "Use the estimate request form to share a few details. This development project is for synthetic test data only.", action: "quote" },
+      { label: "Car Detailing", answer: "Share what you need for this service. The team can discuss the requested scope and availability.", next: "booking" },
+      { label: "Carpet Cleaning", answer: "Share what you need for this service. The team can discuss the requested scope and availability.", next: "booking" },
+      { label: "Upholstery Cleaning", answer: "Share what you need for this service. The team can discuss the requested scope and availability.", next: "booking" },
+      { label: "Move-in / Move-out Cleaning", answer: "Share what you need for this service. The team can discuss the requested scope and availability.", next: "booking" },
+      { label: "Residential Deep Cleaning", answer: "Share what you need for this service. The team can discuss the requested scope and availability.", next: "booking" },
+      { label: "Post-Construction Cleaning", answer: "Share what you need for this service. The team can discuss the requested scope and availability.", next: "booking" },
     ],
   },
   booking: {
@@ -94,7 +54,7 @@ const demoFaqTree: Record<string, FaqNode> = {
   area: {
     prompt: "How can I check whether service is available where I live?",
     options: [
-      { label: "Which cities do you serve?", answer: "We serve customers in the Aurora and Denver, Colorado area. Please share your ZIP code so we can confirm whether your location is within our service area.", next: "area" },
+      { label: "Which cities do you serve?", answer: "We serve Aurora and Denver, Colorado, and may serve more areas. Please share your ZIP code so we can confirm whether your location is within our service area.", next: "area" },
       { label: "Can I check by ZIP code?", answer: "Please share your ZIP code in an estimate request so the team can confirm whether your location is within our service area.", next: "booking" },
       { label: "Is the map available?", answer: "The map will be added after the service area is confirmed.", next: "area" },
     ],
@@ -103,7 +63,7 @@ const demoFaqTree: Record<string, FaqNode> = {
     prompt: "What would you like to know before a cleaning?",
     options: [
       { label: "Should I tidy up first?", answer: "A quick pickup may help make surfaces easier to reach. Confirm preparation recommendations with the business.", next: "preparation" },
-      { label: "Are supplies provided?", answer: "Supply and equipment arrangements are not confirmed yet. Ask the team what they provide.", next: "care" },
+      { label: "Are supplies provided?", answer: "Crown brings its own cleaning supplies. Contact the team to discuss any product sensitivities or preferences.", next: "care" },
       { label: "What about pets?", answer: "Tell the business about pets and any instructions before a visit. Its safety and access procedures need confirmation.", next: "care" },
       { label: "Share special instructions", answer: "Use the message field to share relevant cleaning details. Do not include access codes or sensitive information.", next: "booking" },
     ],
@@ -111,7 +71,7 @@ const demoFaqTree: Record<string, FaqNode> = {
   care: {
     prompt: "What would you like to confirm about the team or your home?",
     options: [
-      { label: "Are products provided?", answer: "Products and equipment arrangements need confirmation. Mention any sensitivities before scheduling.", next: "preparation" },
+      { label: "Are products provided?", answer: "Crown brings its own cleaning supplies. Mention any product sensitivities or preferences when you contact the team.", next: "preparation" },
       { label: "Can I request fragrance-free products?", answer: "Share product preferences or sensitivities with the team and confirm what can be accommodated.", next: "preparation" },
       { label: "How are belongings protected?", answer: "Ask the business about its home-care procedures and how to flag fragile items before a visit.", next: "care" },
     ],

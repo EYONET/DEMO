@@ -12,7 +12,6 @@ export type PublishedService = Pick<
   | "description"
   | "inclusions"
   | "exclusions"
-  | "pricing_display"
   | "image_path"
   | "image_alt"
 >;
@@ -28,6 +27,14 @@ const stockImageIds = {
   commercial: "photo-1504307651254-35680f356dfd",
   deep: "photo-1581578731548-c64695cc6952",
   move_in: "photo-1600210492486-724fe5c67fb0",
+  car_detailing: "photo-1492144534655-ae79c964c9d7",
+  carpet_cleaning: "photo-1600166898405-da9535204843",
+  upholstery_cleaning: "photo-1555041469-a586c61ea9bc",
+  move_in_move_out: "photo-1600210492486-724fe5c67fb0",
+  residential_deep: "photo-1581578731548-c64695cc6952",
+  post_construction: "photo-1504307651254-35680f356dfd",
+  light_cleaning: "photo-1581578731548-c64695cc6952",
+  deep_cleaning: "photo-1581578731548-c64695cc6952",
 } satisfies Record<PublishedService["category"], string>;
 
 export function getStockServiceImageUrl(
@@ -42,7 +49,7 @@ export async function getPublishedServices(): Promise<PublishedService[]> {
   const { data, error } = await supabase
     .from("services")
     .select(
-      "id, slug, category, title, summary, description, inclusions, exclusions, pricing_display, image_path, image_alt",
+      "id, slug, category, title, summary, description, inclusions, exclusions, image_path, image_alt",
     )
     .eq("status", "published")
     .order("sort_order")
@@ -62,7 +69,7 @@ export async function getPublishedService(
   const { data, error } = await supabase
     .from("services")
     .select(
-      "id, slug, category, title, summary, description, inclusions, exclusions, pricing_display, image_path, image_alt",
+      "id, slug, category, title, summary, description, inclusions, exclusions, image_path, image_alt",
     )
     .eq("slug", slug)
     .eq("status", "published")

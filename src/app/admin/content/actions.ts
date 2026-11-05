@@ -5,6 +5,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireContentStaff } from "@/lib/staff-auth";
+import {
+  legacyServiceCategoryValues,
+  serviceCategoryValues,
+} from "@/lib/service-categories";
 import type { Database } from "@/lib/supabase/database.types";
 
 export type ContentActionState = {
@@ -12,18 +16,30 @@ export type ContentActionState = {
   success?: boolean;
 };
 
+const legacyServiceCategorySet: ReadonlySet<string> = new Set(legacyServiceCategoryValues);
+
 const serviceSchema = z.object({
   id: z.union([z.literal(""), z.uuid()]),
   slug: z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase words separated by hyphens.").max(100),
-  category: z.enum(["residential", "commercial", "deep", "move_in"]),
+  category: z.union([z.enum(serviceCategoryValues), z.enum(legacyServiceCategoryValues)]),
   title: z.string().trim().min(1).max(120),
   summary: z.string().trim().min(1).max(300),
   description: z.string().trim().min(1).max(10000),
   inclusions: z.string().max(4000),
   exclusions: z.string().max(4000),
-  pricing_display: z.string().trim().max(300),
   sort_order: z.coerce.number().int().min(0).max(10000),
   status: z.enum(["draft", "published", "archived"]),
+}).superRefine((service, context) => {
+  if (
+    legacyServiceCategorySet.has(service.category) &&
+    (service.id === "" || service.status !== "archived")
+  ) {
+    context.addIssue({
+      code: "custom",
+      path: ["category"],
+      message: "Choose one of the approved service categories. Legacy categories may remain only on archived services.",
+    });
+  }
 });
 
 const areaSchema = z.object({
@@ -66,10 +82,27 @@ const contactSchema = z.object({
   businessHours: z.string().trim().max(160),
 });
 
+const homepageGalleryImageSchema = z.object({
+  id: z.union([z.literal(""), z.uuid()]),
+  image_alt: z.string().trim().min(1).max(300),
+  caption: z.string().trim().min(1).max(160),
+  sort_order: z.coerce.number().int().min(0).max(10000),
+});
+
+const homepageBeforeAfterPairSchema = z.object({
+  id: z.union([z.literal(""), z.uuid()]),
+  before_image_alt: z.string().trim().min(1).max(300),
+  after_image_alt: z.string().trim().min(1).max(300),
+  caption: z.string().trim().min(1).max(160),
+  sort_order: z.coerce.number().int().min(0).max(10000),
+});
+
 const homeCopySchema = z.object({
   eyebrow: z.string().trim().min(1).max(120),
   headline: z.string().trim().min(1).max(240),
   introduction: z.string().trim().min(1).max(600),
+  galleryEnabled: z.boolean(),
+  beforeAfterEnabled: z.boolean(),
 });
 
 function value(formData: FormData, name: string) {
@@ -218,7 +251,6 @@ export async function saveService(
     description: value(formData, "description"),
     inclusions: value(formData, "inclusions"),
     exclusions: value(formData, "exclusions"),
-    pricing_display: value(formData, "pricing_display"),
     sort_order: value(formData, "sort_order"),
     status: value(formData, "status"),
   });
@@ -233,7 +265,6 @@ export async function saveService(
     description: parsed.data.description,
     inclusions: splitLines(parsed.data.inclusions),
     exclusions: splitLines(parsed.data.exclusions),
-    pricing_display: parsed.data.pricing_display || null,
     status: parsed.data.status,
     sort_order: parsed.data.sort_order,
     updated_at: new Date().toISOString(),
@@ -368,13 +399,42 @@ export async function saveHomeCopy(
     eyebrow: value(formData, "eyebrow"),
     headline: value(formData, "headline"),
     introduction: value(formData, "introduction"),
+    galleryEnabled: formData.get("gallery_enabled") === "on",
+    beforeAfterEnabled: formData.get("before_after_enabled") === "on",
   });
   if (!parsed.success) return { message: parsed.error.issues[0]?.message ?? "Review the homepage copy." };
 
   const { supabase, user } = await requireContentStaff();
+  if (parsed.data.galleryEnabled) {
+    const { count, error } = await supabase
+      .from("homepage_gallery_images")
+      .select("id", { count: "exact", head: true });
+    if (error) {
+      console.error("Unable to verify homepage gallery images.", { code: error.code });
+      return { message: "Unable to verify gallery images. Try again before enabling this section." };
+    }
+    if (!count) return { message: "Add at least one approved gallery image before enabling it." };
+  }
+  if (parsed.data.beforeAfterEnabled) {
+    const { count, error } = await supabase
+      .from("homepage_before_after_pairs")
+      .select("id", { count: "exact", head: true });
+    if (error) {
+      console.error("Unable to verify before-and-after photos.", { code: error.code });
+      return { message: "Unable to verify before-and-after photos. Try again before enabling this section." };
+    }
+    if (!count) return { message: "Add at least one approved before-and-after pair before enabling it." };
+  }
+
   const { error } = await supabase.from("site_settings").upsert({
     key: "home_copy",
-    value: parsed.data,
+    value: {
+      eyebrow: parsed.data.eyebrow,
+      headline: parsed.data.headline,
+      introduction: parsed.data.introduction,
+      gallery_enabled: parsed.data.galleryEnabled,
+      before_after_enabled: parsed.data.beforeAfterEnabled,
+    },
     is_public: true,
     updated_by: user.id,
   });
@@ -383,8 +443,8 @@ export async function saveHomeCopy(
     return { message: "Unable to save homepage copy. Please try again." };
   }
 
-  revalidatePath("/");
-  return { success: true, message: "Homepage copy saved." };
+  revalidatePath("/", "layout");
+  return { success: true, message: "Homepage settings saved." };
 }
 
 export async function saveServiceArea(
@@ -619,5 +679,305 @@ export async function uploadServiceImage(
     message: replacementCleanupFailed
       ? "New image uploaded, but the previous image could not be removed. Ask the administrator to clean it up in Supabase Storage."
       : "Service image uploaded.",
+  };
+}
+
+type ValidatedImage = {
+  file: File;
+  extension: string;
+};
+
+async function validateImageFile(
+  formData: FormData,
+  fieldName: string,
+  required: boolean,
+): Promise<{ image?: ValidatedImage; error?: string }> {
+  const entry = formData.get(fieldName);
+  if (!(entry instanceof File) || entry.size === 0) {
+    return required ? { error: "Choose an image file." } : {};
+  }
+  if (entry.size > MAX_IMAGE_BYTES) return { error: "Images must be 5 MB or smaller." };
+  const imageType = imageTypes[entry.type as keyof typeof imageTypes];
+  if (!imageType) return { error: "Use a JPEG, PNG, WebP, or AVIF image." };
+  const bytes = new Uint8Array(await entry.slice(0, 16).arrayBuffer());
+  if (!imageType.signature(bytes)) {
+    return { error: "The file contents do not match the selected image type." };
+  }
+  return { image: { file: entry, extension: imageType.extension } };
+}
+
+async function uploadHomepageImage(
+  supabase: Awaited<ReturnType<typeof requireContentStaff>>["supabase"],
+  folder: "gallery" | "before-after",
+  image: ValidatedImage,
+) {
+  const path = `homepage/${folder}/${randomUUID()}.${image.extension}`;
+  const { error } = await supabase.storage
+    .from("site-media")
+    .upload(path, image.file, { contentType: image.file.type, upsert: false });
+  if (error) {
+    console.error("Unable to upload homepage project photo.", { message: error.message });
+    return { path: null, error: "Image upload failed. Please try again." };
+  }
+  return { path, error: null };
+}
+
+async function removeHomepageImage(
+  supabase: Awaited<ReturnType<typeof requireContentStaff>>["supabase"],
+  paths: string[],
+) {
+  const { error } = await supabase.storage.from("site-media").remove(paths);
+  if (error) {
+    console.error("Unable to remove homepage project photo files.", { message: error.message });
+    return false;
+  }
+  return true;
+}
+
+export async function saveHomepageGalleryImage(
+  _previous: ContentActionState,
+  formData: FormData,
+): Promise<ContentActionState> {
+  const parsed = homepageGalleryImageSchema.safeParse({
+    id: value(formData, "id"),
+    image_alt: value(formData, "image_alt"),
+    caption: value(formData, "caption"),
+    sort_order: value(formData, "sort_order"),
+  });
+  if (!parsed.success) return { message: parsed.error.issues[0]?.message ?? "Review the gallery image details." };
+
+  const { supabase } = await requireContentStaff();
+  let existing: { id: string; image_path: string } | null = null;
+  if (parsed.data.id) {
+    const result = await supabase
+      .from("homepage_gallery_images")
+      .select("id, image_path")
+      .eq("id", parsed.data.id)
+      .maybeSingle();
+    if (result.error) return { message: "Unable to verify the selected gallery image." };
+    if (!result.data) return { message: "This gallery image no longer exists." };
+    existing = result.data;
+  }
+
+  const imageResult = await validateImageFile(formData, "image", !existing);
+  if (imageResult.error) return { message: imageResult.error };
+  let newPath: string | null = null;
+  if (imageResult.image) {
+    const upload = await uploadHomepageImage(supabase, "gallery", imageResult.image);
+    if (upload.error || !upload.path) return { message: upload.error ?? "Image upload failed." };
+    newPath = upload.path;
+  }
+
+  const imagePath = newPath ?? existing?.image_path;
+  if (!imagePath) return { message: "Choose an image file." };
+  const record = {
+    image_path: imagePath,
+    image_alt: parsed.data.image_alt,
+    caption: parsed.data.caption,
+    sort_order: parsed.data.sort_order,
+  };
+  const result = existing
+    ? await supabase.from("homepage_gallery_images").update(record).eq("id", existing.id).select("id").maybeSingle()
+    : await supabase.from("homepage_gallery_images").insert(record).select("id").maybeSingle();
+  if (result.error || !result.data) {
+    if (newPath) await removeHomepageImage(supabase, [newPath]);
+    console.error("Unable to save homepage gallery image.", { code: result.error?.code });
+    return { message: "Unable to save this gallery image. Please try again." };
+  }
+
+  const oldImageRemoved = !newPath || !existing?.image_path ||
+    await removeHomepageImage(supabase, [existing.image_path]);
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/content");
+  return {
+    success: true,
+    message: oldImageRemoved
+      ? "Gallery image saved."
+      : "Gallery image saved, but its previous file could not be removed from storage.",
+  };
+}
+
+export async function deleteHomepageGalleryImage(
+  _previous: ContentActionState,
+  formData: FormData,
+): Promise<ContentActionState> {
+  const id = value(formData, "id");
+  if (!z.uuid().safeParse(id).success) return { message: "Choose a valid gallery image." };
+  const { supabase } = await requireContentStaff();
+  const [imageResult, settingsResult, countResult] = await Promise.all([
+    supabase.from("homepage_gallery_images").select("id, image_path").eq("id", id).maybeSingle(),
+    supabase.from("site_settings").select("value").eq("key", "home_copy").maybeSingle(),
+    supabase.from("homepage_gallery_images").select("id", { count: "exact", head: true }),
+  ]);
+  if (imageResult.error || settingsResult.error || countResult.error) {
+    return { message: "Unable to verify the gallery image before deletion." };
+  }
+  if (!imageResult.data) return { message: "This gallery image no longer exists." };
+  const settingValue = settingsResult.data?.value;
+  const galleryEnabled =
+    typeof settingValue === "object" && settingValue !== null && !Array.isArray(settingValue) &&
+    settingValue.gallery_enabled === true;
+  if (galleryEnabled && (countResult.count ?? 0) <= 1) {
+    return { message: "Hide the gallery before deleting its last image." };
+  }
+
+  const { data: deleted, error } = await supabase
+    .from("homepage_gallery_images")
+    .delete()
+    .eq("id", id)
+    .select("id")
+    .maybeSingle();
+  if (error) return { message: "Unable to delete the gallery image." };
+  if (!deleted) return { message: "This gallery image was not deleted." };
+
+  const storageRemoved = await removeHomepageImage(supabase, [imageResult.data.image_path]);
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/content");
+  return {
+    success: storageRemoved,
+    message: storageRemoved
+      ? "Gallery image deleted."
+      : "The gallery image was removed from the website, but its file could not be removed from storage.",
+  };
+}
+
+export async function saveHomepageBeforeAfterPair(
+  _previous: ContentActionState,
+  formData: FormData,
+): Promise<ContentActionState> {
+  const parsed = homepageBeforeAfterPairSchema.safeParse({
+    id: value(formData, "id"),
+    before_image_alt: value(formData, "before_image_alt"),
+    after_image_alt: value(formData, "after_image_alt"),
+    caption: value(formData, "caption"),
+    sort_order: value(formData, "sort_order"),
+  });
+  if (!parsed.success) return { message: parsed.error.issues[0]?.message ?? "Review the before-and-after pair details." };
+
+  const { supabase } = await requireContentStaff();
+  let existing: {
+    id: string;
+    before_image_path: string;
+    after_image_path: string;
+  } | null = null;
+  if (parsed.data.id) {
+    const result = await supabase
+      .from("homepage_before_after_pairs")
+      .select("id, before_image_path, after_image_path")
+      .eq("id", parsed.data.id)
+      .maybeSingle();
+    if (result.error) return { message: "Unable to verify the selected before-and-after pair." };
+    if (!result.data) return { message: "This before-and-after pair no longer exists." };
+    existing = result.data;
+  }
+
+  const [beforeResult, afterResult] = await Promise.all([
+    validateImageFile(formData, "before_image", !existing),
+    validateImageFile(formData, "after_image", !existing),
+  ]);
+  if (beforeResult.error) return { message: `Before image: ${beforeResult.error}` };
+  if (afterResult.error) return { message: `After image: ${afterResult.error}` };
+
+  const newPaths: string[] = [];
+  let beforePath: string | null = null;
+  let afterPath: string | null = null;
+  if (beforeResult.image) {
+    const upload = await uploadHomepageImage(supabase, "before-after", beforeResult.image);
+    if (upload.error || !upload.path) return { message: upload.error ?? "Before image upload failed." };
+    beforePath = upload.path;
+    newPaths.push(upload.path);
+  }
+  if (afterResult.image) {
+    const upload = await uploadHomepageImage(supabase, "before-after", afterResult.image);
+    if (upload.error || !upload.path) {
+      if (newPaths.length > 0) await removeHomepageImage(supabase, newPaths);
+      return { message: `After image: ${upload.error ?? "Image upload failed."}` };
+    }
+    afterPath = upload.path;
+    newPaths.push(upload.path);
+  }
+
+  const beforeImagePath = beforePath ?? existing?.before_image_path;
+  const afterImagePath = afterPath ?? existing?.after_image_path;
+  if (!beforeImagePath || !afterImagePath) {
+    if (newPaths.length > 0) await removeHomepageImage(supabase, newPaths);
+    return { message: "Choose both a before and an after image." };
+  }
+  const record = {
+    before_image_path: beforeImagePath,
+    before_image_alt: parsed.data.before_image_alt,
+    after_image_path: afterImagePath,
+    after_image_alt: parsed.data.after_image_alt,
+    caption: parsed.data.caption,
+    sort_order: parsed.data.sort_order,
+  };
+  const result = existing
+    ? await supabase.from("homepage_before_after_pairs").update(record).eq("id", existing.id).select("id").maybeSingle()
+    : await supabase.from("homepage_before_after_pairs").insert(record).select("id").maybeSingle();
+  if (result.error || !result.data) {
+    if (newPaths.length > 0) await removeHomepageImage(supabase, newPaths);
+    console.error("Unable to save homepage before-and-after pair.", { code: result.error?.code });
+    return { message: "Unable to save this before-and-after pair. Please try again." };
+  }
+
+  const oldPaths = [
+    beforePath && existing?.before_image_path,
+    afterPath && existing?.after_image_path,
+  ].filter((path): path is string => Boolean(path));
+  const oldImagesRemoved = oldPaths.length === 0 || await removeHomepageImage(supabase, oldPaths);
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/content");
+  return {
+    success: true,
+    message: oldImagesRemoved
+      ? "Before-and-after pair saved."
+      : "Pair saved, but one or more previous files could not be removed from storage.",
+  };
+}
+
+export async function deleteHomepageBeforeAfterPair(
+  _previous: ContentActionState,
+  formData: FormData,
+): Promise<ContentActionState> {
+  const id = value(formData, "id");
+  if (!z.uuid().safeParse(id).success) return { message: "Choose a valid before-and-after pair." };
+  const { supabase } = await requireContentStaff();
+  const [pairResult, settingsResult, countResult] = await Promise.all([
+    supabase.from("homepage_before_after_pairs").select("id, before_image_path, after_image_path").eq("id", id).maybeSingle(),
+    supabase.from("site_settings").select("value").eq("key", "home_copy").maybeSingle(),
+    supabase.from("homepage_before_after_pairs").select("id", { count: "exact", head: true }),
+  ]);
+  if (pairResult.error || settingsResult.error || countResult.error) {
+    return { message: "Unable to verify the before-and-after pair before deletion." };
+  }
+  if (!pairResult.data) return { message: "This before-and-after pair no longer exists." };
+  const settingValue = settingsResult.data?.value;
+  const sectionEnabled =
+    typeof settingValue === "object" && settingValue !== null && !Array.isArray(settingValue) &&
+    settingValue.before_after_enabled === true;
+  if (sectionEnabled && (countResult.count ?? 0) <= 1) {
+    return { message: "Hide the before-and-after section before deleting its last pair." };
+  }
+
+  const { data: deleted, error } = await supabase
+    .from("homepage_before_after_pairs")
+    .delete()
+    .eq("id", id)
+    .select("id")
+    .maybeSingle();
+  if (error) return { message: "Unable to delete the before-and-after pair." };
+  if (!deleted) return { message: "This before-and-after pair was not deleted." };
+
+  const storageRemoved = await removeHomepageImage(supabase, [
+    pairResult.data.before_image_path,
+    pairResult.data.after_image_path,
+  ]);
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/content");
+  return {
+    success: storageRemoved,
+    message: storageRemoved
+      ? "Before-and-after pair deleted."
+      : "The pair was removed from the website, but one or more image files could not be removed from storage.",
   };
 }

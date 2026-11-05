@@ -7,37 +7,17 @@ import ServiceCard from "@/components/service-card";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
 import { getPublishedFaqTree } from "@/lib/faq";
+import {
+  getHomepageBeforeAfterPairs,
+  getHomepageGalleryImages,
+  getHomepageImageUrl,
+} from "@/lib/homepage-media";
 import { getPublishedServices } from "@/lib/services";
 import {
   getActiveServiceAreas,
   getPublicContactDetails,
   getPublicHomeCopy,
 } from "@/lib/site-content";
-
-const galleryImages = [
-  {
-    src: "https://images.unsplash.com/photo-1600166898405-da9535204843?auto=format&fit=crop&w=1200&q=80",
-    alt: "Illustrative stock photograph of a clean carpeted living space",
-    title: "Carpet and living spaces",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=80",
-    alt: "Illustrative stock photograph of a tidy living room",
-    title: "Everyday home upkeep",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80",
-    alt: "Illustrative stock photograph of a cleaner working indoors",
-    title: "A closer clean",
-  },
-];
-
-const pricingPreview = [
-  { service: "Residential cleaning", amount: "$100–$200", unit: "per visit" },
-  { service: "Commercial cleaning", amount: "$200–$500", unit: "per visit" },
-  { service: "Deep cleaning", amount: "$150–$300", unit: "per visit" },
-  { service: "Move-in cleaning", amount: "$180–$350", unit: "per visit" },
-];
 
 export default async function Home() {
   const [services, faqNodes, homeCopy, activeServiceAreas, contact] = await Promise.all([
@@ -46,6 +26,10 @@ export default async function Home() {
     getPublicHomeCopy(),
     getActiveServiceAreas(),
     getPublicContactDetails(),
+  ]);
+  const [galleryImages, beforeAfterPairs] = await Promise.all([
+    homeCopy.galleryEnabled ? getHomepageGalleryImages() : Promise.resolve([]),
+    homeCopy.beforeAfterEnabled ? getHomepageBeforeAfterPairs() : Promise.resolve([]),
   ]);
   const serviceLocations = [
     { city: "Aurora", state: "Colorado" },
@@ -63,6 +47,12 @@ export default async function Home() {
   const headlineSplitIndex = Math.ceil(headlineWords.length / 2);
   const headlineLead = headlineWords.slice(0, headlineSplitIndex).join(" ");
   const headlineEmphasis = headlineWords.slice(headlineSplitIndex).join(" ");
+  const gallerySectionNumber = 4;
+  const beforeAfterSectionNumber =
+    gallerySectionNumber + Number(homeCopy.galleryEnabled);
+  const cleaningOptionsSectionNumber =
+    beforeAfterSectionNumber + Number(homeCopy.beforeAfterEnabled);
+  const processSectionNumber = cleaningOptionsSectionNumber + 1;
 
   return (
     <div className="crown-site">
@@ -97,14 +87,6 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className="crown-trust-strip" aria-label="Service information">
-          <div className="crown-container crown-trust-grid">
-            <p><span aria-hidden="true">01</span> Regular and deep cleaning</p>
-            <p><span aria-hidden="true">02</span> Aurora and Denver, Colorado</p>
-            <p><span aria-hidden="true">03</span> ZIP code coverage confirmation</p>
-          </div>
-        </section>
-
         <section className="crown-section" id="solutions">
           <div className="crown-container">
             <div className="crown-section-heading">
@@ -113,9 +95,9 @@ export default async function Home() {
                 <h2>Find the right clean<br /><span>for your space.</span></h2>
               </div>
               <p>
-                Regular cleaning supports everyday upkeep. Deep cleaning is more
-                detailed and focuses on built-up dirt and areas that may not be
-                included in a standard clean. We can help you choose.
+                Explore Car Detailing, Carpet Cleaning, Upholstery Cleaning,
+                Move-in / Move-out Cleaning, Residential Deep Cleaning, and
+                Post-Construction Cleaning.
               </p>
             </div>
             {services.length > 0 ? (
@@ -133,26 +115,17 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className="crown-section crown-standard-section" id="standard">
-          <div className="crown-container">
-            <p className="crown-eyebrow">02 / What to expect</p>
-            <h2>Clear information.<br /><span>A considered clean.</span></h2>
-            <div className="crown-standard-grid">
-              <article>
-                <span>01</span>
-                <h3>Choose the right service</h3>
-                <p>Not sure whether regular or deep cleaning fits? Tell us what you need and we can help you choose.</p>
-              </article>
-              <article>
-                <span>02</span>
-                <h3>Check your location</h3>
-                <p>Share your ZIP code so the team can confirm whether your location is within the service area.</p>
-              </article>
-              <article>
-                <span>03</span>
-                <h3>Get a follow-up</h3>
-                <p>Send an inquiry and the team will follow up. Submitting the form does not confirm an appointment.</p>
-              </article>
+        <section className="crown-trust-strip crown-guarantee-strip" aria-label="100% Satisfaction Guarantee">
+          <div className="crown-container crown-guarantee-content">
+            <div className="crown-guarantee-seal" aria-hidden="true">100%</div>
+            <div className="crown-guarantee-copy">
+              <h2>100% Satisfaction Guarantee</h2>
+              <p>
+                At Crown Cleaning Solutions, your satisfaction comes first. If
+                you’re unhappy with any part of your cleaning, contact us
+                within 48 hours of your service and we’ll return to touch up
+                the areas you’re dissatisfied with.
+              </p>
             </div>
           </div>
         </section>
@@ -169,124 +142,31 @@ export default async function Home() {
               <span className="crown-image-label">Illustrative stock image</span>
             </div>
             <div className="crown-story-copy">
-              <p className="crown-eyebrow">03 / The cleaning approach</p>
-              <h2>Everyday upkeep<br /><span>or a deeper clean.</span></h2>
+              <p className="crown-eyebrow">02 / About Crown</p>
+              <h2>Cleaning that starts<br /><span>with a conversation.</span></h2>
               <p>
-                Regular cleaning focuses on everyday upkeep, such as wiping
-                surfaces, cleaning bathrooms, and vacuuming floors. Deep cleaning
-                is more detailed and targets built-up dirt and areas that may not
-                be included in a standard cleaning.
+                Crown Cleaning Solutions serves customers in Aurora and Denver,
+                Colorado, with other areas considered after ZIP-code
+                confirmation. The listed services include Car Detailing,
+                Carpet Cleaning, Upholstery Cleaning, Move-in / Move-out
+                Cleaning, Residential Deep Cleaning, and Post-Construction
+                Cleaning.
               </p>
-              <p>We can help you choose the right service.</p>
-              <Link className="crown-text-link" href="#quote">
-                Tell us what you need <span aria-hidden="true">→</span>
+              <p>
+                A team member can follow up to discuss your request, clarify
+                the service scope, and confirm availability. An inquiry is not
+                an appointment.
+              </p>
+              <Link className="crown-text-link" href="/about">
+                Read more about us <span aria-hidden="true">↗</span>
               </Link>
-            </div>
-          </div>
-        </section>
-
-        <section className="crown-section crown-gallery-section" id="gallery">
-          <div className="crown-container">
-            <div className="crown-section-heading">
-              <div>
-                <p className="crown-eyebrow">04 / Evidence of Craft</p>
-                <h2>A closer look<br /><span>at clean spaces.</span></h2>
-              </div>
-              <p>
-                These licensed stock photos are visual references only—not
-                Crown projects or evidence of results. Authentic project photos
-                can replace them when available and approved.
-              </p>
-            </div>
-            <div className="crown-gallery-grid">
-              {galleryImages.map((image) => (
-                <figure className="crown-gallery-card" key={image.src}>
-                  <div className="crown-gallery-image">
-                    <Image src={image.src} alt={image.alt} fill sizes="(max-width: 760px) 100vw, 33vw" />
-                    <span className="crown-image-label">Stock image · not a Crown project</span>
-                  </div>
-                  <figcaption>{image.title}</figcaption>
-                </figure>
-              ))}
-            </div>
-            <p className="crown-gallery-note">
-              No before-and-after examples are shown. Any future project
-              photography will be genuine and published only with permission.
-            </p>
-          </div>
-        </section>
-
-        <section className="crown-section crown-before-after-section" id="before-after">
-          <div className="crown-container">
-            <div className="crown-section-heading">
-              <div>
-                <p className="crown-eyebrow">05 / Before &amp; after</p>
-                <h2>Real project photos<br /><span>coming when approved.</span></h2>
-              </div>
-              <p>
-                This space is reserved for matched before-and-after photos from
-                Crown projects. No project photos have been provided for this
-                preview, so these are clearly marked layout placeholders.
-              </p>
-            </div>
-            <div className="crown-before-after-grid">
-              {[1, 2, 3].map((pairNumber) => (
-                <article className="crown-before-after-card" key={pairNumber}>
-                  <div className="crown-before-after-pair">
-                    <div className="crown-before-after-slot">
-                      <span>Before</span>
-                      <p>Approved Crown project photo needed</p>
-                    </div>
-                    <div className="crown-before-after-slot">
-                      <span>After</span>
-                      <p>Approved Crown project photo needed</p>
-                    </div>
-                  </div>
-                  <p className="crown-before-after-caption">
-                    Photo pair placeholder {String(pairNumber).padStart(2, "0")}
-                  </p>
-                </article>
-              ))}
-            </div>
-            <p className="crown-gallery-note">
-              These are not photos or examples of completed work. Only genuine
-              Crown project images, shared with permission, will appear here.
-            </p>
-          </div>
-        </section>
-
-        <section className="crown-section crown-process-section" id="protocol">
-          <div className="crown-container">
-            <p className="crown-eyebrow">06 / Operational Framework</p>
-            <h2>From first inquiry<br /><span>to confirmed service.</span></h2>
-            <div className="crown-process-grid">
-              <article>
-                <span>01</span>
-                <h3>Send an inquiry</h3>
-                <p>Share the cleaning service you are interested in and your location so the team can review your request.</p>
-              </article>
-              <article>
-                <span>02</span>
-                <h3>Request review</h3>
-                <p>The team reviews the information you provide and considers the service you are asking about.</p>
-              </article>
-              <article>
-                <span>03</span>
-                <h3>Discuss your needs</h3>
-                <p>A team member follows up with you to discuss your request and any details that need clarification.</p>
-              </article>
-              <article>
-                <span>04</span>
-                <h3>Confirm service</h3>
-                <p>The business confirms service and availability with you. Submitting an inquiry is not an appointment.</p>
-              </article>
             </div>
           </div>
         </section>
 
         <section className="crown-section crown-testimonials-section" id="testimonials">
           <div className="crown-container">
-            <p className="crown-eyebrow">07 / Customer feedback</p>
+            <p className="crown-eyebrow">03 / Customer feedback</p>
             <h2>Reviews, when<br /><span>they’re ready.</span></h2>
             <div className="crown-review-grid">
               {[1, 2, 3].map((previewNumber) => (
@@ -307,42 +187,134 @@ export default async function Home() {
                 </article>
               ))}
             </div>
-            </div>
+          </div>
         </section>
 
-        <section className="crown-section crown-pricing-section" id="pricing">
+        {homeCopy.galleryEnabled && galleryImages.length > 0 && <section className="crown-section crown-gallery-section" id="gallery">
           <div className="crown-container">
-            <div className="crown-section-heading crown-pricing-heading">
+            <div className="crown-section-heading">
               <div>
-                <p className="crown-eyebrow">08 / Pricing guidance</p>
-                <h2>Let’s understand<br /><span>what you need.</span></h2>
+                <p className="crown-eyebrow">{String(gallerySectionNumber).padStart(2, "0")} / Evidence of Craft</p>
+                <h2>A closer look<br /><span>at clean spaces.</span></h2>
               </div>
               <p>
-                These example ranges are only for previewing the website
-                design. They are not Crown Cleaning Solutions prices, quotes,
-                or offers.
+                These photos show Crown Cleaning Solutions projects and are
+                shared with permission.
               </p>
             </div>
-            <p className="crown-pricing-demo-label">
-              Demo pricing only · Not Crown rates
+            <div className="crown-gallery-grid">
+              {galleryImages.map((image) => (
+                <figure className="crown-gallery-card" key={image.id}>
+                  <div className="crown-gallery-image">
+                    <Image src={getHomepageImageUrl(image.image_path)} alt={image.image_alt} fill sizes="(max-width: 760px) 100vw, 33vw" unoptimized />
+                  </div>
+                  <figcaption>{image.caption}</figcaption>
+                </figure>
+              ))}
+            </div>
+            <p className="crown-gallery-note">
+              Each image is an authentic project photo shared with permission.
             </p>
-            <div className="crown-pricing-cards">
-              {pricingPreview.map((item) => (
-                <article className="crown-pricing-card" key={item.service}>
-                  <h3>{item.service}</h3>
-                  <p className="crown-pricing-amount">{item.amount}</p>
-                  <p className="crown-pricing-unit">{item.unit} · sample only</p>
+          </div>
+        </section>}
+
+        {homeCopy.beforeAfterEnabled && beforeAfterPairs.length > 0 && <section className="crown-section crown-before-after-section" id="before-after">
+          <div className="crown-container">
+            <div className="crown-section-heading">
+              <div>
+                <p className="crown-eyebrow">{String(beforeAfterSectionNumber).padStart(2, "0")} / Before &amp; after</p>
+                <h2>Results You Can See</h2>
+              </div>
+            </div>
+            <div className="crown-before-after-grid">
+              {beforeAfterPairs.map((pair) => (
+                <article className="crown-before-after-card" key={pair.id}>
+                  <div className="crown-before-after-pair">
+                    <div className="crown-before-after-slot crown-before-after-image">
+                      <Image src={getHomepageImageUrl(pair.before_image_path)} alt={pair.before_image_alt} fill sizes="(max-width: 760px) 100vw, 17vw" unoptimized />
+                      <span>Before</span>
+                    </div>
+                    <div className="crown-before-after-slot crown-before-after-image">
+                      <Image src={getHomepageImageUrl(pair.after_image_path)} alt={pair.after_image_alt} fill sizes="(max-width: 760px) 100vw, 17vw" unoptimized />
+                      <span>After</span>
+                    </div>
+                  </div>
+                  <p className="crown-before-after-caption">{pair.caption}</p>
                 </article>
               ))}
             </div>
-            <div className="crown-pricing-copy">
+          </div>
+        </section>}
+
+        <section className="crown-section crown-standard-section" id="cleaning-options">
+          <div className="crown-container">
+            <div className="crown-section-heading crown-standard-heading">
+              <div>
+                <p className="crown-eyebrow">{String(cleaningOptionsSectionNumber).padStart(2, "0")} / Light &amp; Deep Cleaning</p>
+                <h2>Choose the clean<br /><span>that fits your routine.</span></h2>
+              </div>
               <p>
-                Actual pricing has not been provided. Contact the team to
-                discuss your needs and request an estimate.
+                Two customizable cleaning options, with a clear checklist of
+                what each includes.
               </p>
-              <a className="crown-button crown-button-primary" href="#quote">
-                Request an estimate <span aria-hidden="true">↗</span>
-              </a>
+            </div>
+
+            <div className="crown-standard-grid">
+              <article className="crown-cleaning-option">
+                <div className="crown-cleaning-option-header">
+                  <span className="crown-cleaning-option-number">01</span>
+                  <span className="crown-cleaning-option-label">Light Cleaning</span>
+                </div>
+                <h3>Made for regular upkeep</h3>
+                <p>Recommended for recurring cleanings.</p>
+                <span className="crown-cleaning-recommendation">Customizable to your needs</span>
+              </article>
+              <article className="crown-cleaning-option crown-cleaning-option-deep">
+                <div className="crown-cleaning-option-header">
+                  <span className="crown-cleaning-option-number">02</span>
+                  <span className="crown-cleaning-option-label">Deep Cleaning</span>
+                </div>
+                <h3>A more detailed clean</h3>
+                <p>Recommended for move-out services or when you want a more thorough clean.</p>
+                <span className="crown-cleaning-recommendation">Includes the Light Cleaning tasks plus additional detail.</span>
+              </article>
+            </div>
+            <div className="crown-cleaning-more">
+              <Link className="crown-button crown-button-primary" href="/light-and-deep-cleaning">
+                Read more <span aria-hidden="true">↗</span>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <section className="crown-section crown-process-section" id="protocol">
+          <div className="crown-container">
+            <p className="crown-eyebrow">{String(processSectionNumber).padStart(2, "0")} / How It Works</p>
+            <h2>From first inquiry<br /><span>to confirmed service.</span></h2>
+            <div className="crown-process-grid">
+              <article tabIndex={0}>
+                <span>01</span>
+                <h3>Send an inquiry</h3>
+                <p>Share the cleaning service you are interested in and your location so the team can review your request.</p>
+                <span className="crown-process-arrow" aria-hidden="true">→</span>
+              </article>
+              <article tabIndex={0}>
+                <span>02</span>
+                <h3>Request review</h3>
+                <p>The team reviews the information you provide and considers the service you are asking about.</p>
+                <span className="crown-process-arrow" aria-hidden="true">→</span>
+              </article>
+              <article tabIndex={0}>
+                <span>03</span>
+                <h3>Discuss your needs</h3>
+                <p>A team member follows up with you to discuss your request and any details that need clarification.</p>
+                <span className="crown-process-arrow" aria-hidden="true">→</span>
+              </article>
+              <article tabIndex={0}>
+                <span>04</span>
+                <h3>Confirm service</h3>
+                <p>The business confirms service and availability with you. Submitting an inquiry is not an appointment.</p>
+              </article>
             </div>
           </div>
         </section>
@@ -350,10 +322,10 @@ export default async function Home() {
         <section className="crown-section crown-coverage-section" id="coverage">
           <div className="crown-container crown-coverage-grid">
             <div>
-              <p className="crown-eyebrow">09 / Service area</p>
-              <h2>Serving Aurora<br /><span>and Denver.</span></h2>
+              <p className="crown-eyebrow">{String(processSectionNumber + 1).padStart(2, "0")} / Service area</p>
+              <h2>Serving Aurora,<br /><span>Denver, and more.</span></h2>
               <p>
-                We serve customers in the Aurora and Denver, Colorado area.
+                We serve Aurora and Denver, Colorado, and may serve more areas.
                 Please share your ZIP code so we can confirm whether your
                 location is within our service area.
               </p>
@@ -372,7 +344,7 @@ export default async function Home() {
         <section className="crown-section crown-quote-section" id="quote">
           <div className="crown-container crown-quote-grid">
             <div>
-              <p className="crown-eyebrow">10 / Request an estimate</p>
+              <p className="crown-eyebrow">{String(processSectionNumber + 2).padStart(2, "0")} / Request an estimate</p>
               <h2>Tell us about<br /><span>your space.</span></h2>
               <p>
                 Share a few details and a ZIP code. The team will follow up to
@@ -416,7 +388,7 @@ export default async function Home() {
                 )}
                 <div>
                   <dt>Service area</dt>
-                  <dd>Aurora and Denver, Colorado. ZIP-code confirmation required.</dd>
+                  <dd>Aurora, Denver, and more areas may be available. ZIP-code confirmation required.</dd>
                 </div>
               </dl>
             </div>

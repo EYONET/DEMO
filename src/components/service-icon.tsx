@@ -5,6 +5,14 @@ const servicePresentation = {
   commercial: { icon: "commercial", iconClass: "icon-key" },
   deep: { icon: "sparkle", iconClass: "icon-sparkle" },
   move_in: { icon: "key", iconClass: "icon-key" },
+  car_detailing: { icon: "sparkle", iconClass: "icon-sparkle" },
+  carpet_cleaning: { icon: "sparkle", iconClass: "icon-sparkle" },
+  upholstery_cleaning: { icon: "sparkle", iconClass: "icon-sparkle" },
+  move_in_move_out: { icon: "key", iconClass: "icon-key" },
+  residential_deep: { icon: "sparkle", iconClass: "icon-sparkle" },
+  post_construction: { icon: "commercial", iconClass: "icon-key" },
+  light_cleaning: { icon: "sparkle", iconClass: "icon-sparkle" },
+  deep_cleaning: { icon: "sparkle", iconClass: "icon-sparkle" },
 } satisfies Record<
   Database["public"]["Enums"]["service_category"],
   { icon: string; iconClass: string }
