@@ -37,7 +37,7 @@ These defaults allow implementation to start, but should be replaced or explicit
 | Language | English. | Additional languages, if any. |
 | Public pricing | No prices displayed on public pages. | Staff discusses prices directly with customers after inquiry. |
 | Satisfaction guarantee | Crown confirms a 100% satisfaction promise: customers should contact Crown within 48 hours if dissatisfied, and Crown will return to touch up the areas of concern. | Confirm contact channel and any exclusions before expanding or qualifying this promise. |
-| Public routes | Home, services hub, service detail templates, about, estimate request, contact. | Exact route/page count and final navigation. |
+| Public routes | Home, service detail templates, about, estimate request, contact; no standalone services hub. | Exact route/page count and final navigation. |
 | Form | Multi-step inquiry with contact, service, property/location, and optional notes/preferences. | Required fields, phone requirement, preferred-date question, consent wording. |
 | Staff | One owner/admin initially; additional staff can be added. | Named staff, their privileges, and who approves/publishes content. |
 | Hosting | GitHub repository plus a Next.js-capable host such as Vercel. | Hosting account, domain, billing owner. GitHub Pages remains suitable only for the static demo. |
@@ -54,18 +54,17 @@ Do not invent real testimonials, certifications, customer counts, prices, respon
 The proposal calls for a responsive website with:
 
 - **Homepage:** clear hero and inquiry CTA; services; service expectations; cleaning approach/about; optional project gallery and before-and-after sections; inquiry process; genuine-review placeholder; confirmed Aurora/Denver coverage; estimate form; and the existing guided FAQ chatbot. Keep project-photo sections hidden until approved Crown project photos are added. Do not display prices or unsupported statistics, testimonials, credentials, or trust claims.
-- **Services hub:** Car Detailing, Carpet Cleaning, Upholstery Cleaning, Move-in / Move-out Cleaning, Residential Deep Cleaning, and Post-Construction Cleaning, in the company-provided order. Light and Deep Cleaning are informational options with a separate homepage section, not inquiry service choices; their scope is based on the client-provided checklist.
+- **Services:** Car Detailing, Carpet Cleaning, Upholstery Cleaning, Move-in / Move-out Cleaning, Residential Deep Cleaning, and Post-Construction Cleaning, in the company-provided order. Link directly to each service detail page through a nested All Services menu under Solutions; do not provide a standalone `/services` hub. Light and Deep Cleaning are informational options with a separate homepage section, not inquiry service choices; their scope is based on the client-provided checklist.
 - **Quote and booking system:** custom, multi-step estimate request form.
 - **Company information:** About Us, Addis Ababa service coverage, interactive map, and contact points.
 
 For this U.S.-based project, “Addis Ababa” is replaced with a **verified U.S. service area** once supplied. The proposal's “5 custom pages” phrase is ambiguous because the service list can create extra detail pages. For planning, use these templates:
 
 1. Home (`/`)
-2. Services hub (`/services`)
-3. Service detail (`/services/[slug]`, shared template for the six selectable company-provided services)
-4. About and service area (`/about`)
-5. Estimate request (`/quote`)
-6. Contact (`/contact`)
+2. Service detail (`/services/[slug]`, shared template for the six selectable company-provided services, linked directly from the nested Solutions menu)
+3. About and service area (`/about`)
+4. Estimate request (`/quote`)
+5. Contact (`/contact`)
 
 The header/footer can link the quote and contact sections prominently. Confirm whether service detail pages count as additional custom pages before scope is finalized.
 
@@ -261,8 +260,7 @@ Use a honeypot and request throttling as the baseline; decide on a CAPTCHA/Turns
 | Route | Purpose | Data |
 |---|---|---|
 | `/` | Hero, calls to action, service highlights, approved stats/testimonials, how it works, FAQ entry point. | Published site settings/content, service summaries. |
-| `/services` | Services hub for the six selectable company-provided services in their approved order. | Published services. |
-| `/services/[slug]` | Shared detail template for each published service. | One published service record. |
+| `/services/[slug]` | Shared detail template for each published service, linked directly from the nested All Services menu under Solutions. | One published service record. |
 | `/about` | Company story, confirmed coverage, map or map link, approved company details. | Published content and service-area entries. |
 | `/quote` | Multi-step quote/booking inquiry flow. | Published service choices and privacy text. |
 | `/contact` | Approved contact points, business hours, and inquiry CTA. | Published contact settings. |
@@ -775,7 +773,7 @@ Each slice should be reviewed in the running app before moving on.
 
 ### Slice 3 — Services, About, Contact, and public content
 
-**Current checkpoint:** The homepage and `/services` listing read published service cards from Supabase, and `/services/[slug]` renders published service details or returns 404 for unknown/unpublished slugs. `/about` lists only active service-area rows; `/contact` reads only explicitly public contact settings. Both show clear pending-content messaging when the business has not published confirmed data. Query errors are surfaced and empty lists have an explicit state. Migration `202610150003_add_demo_services.sql` is applied to the linked development project and adds cautious demo service content with no unverified prices or operational promises. Local production-build HTTP smoke checks passed on homepage, listing, detail, About, and Contact routes. At the Slice 3 checkpoint, the estimate form was not implemented; it was subsequently completed in Slice 4 below. Replace/remove demo records and review all published copy before production.
+**Historical Slice 3 checkpoint:** At that time, the homepage and `/services` listing read published service cards from Supabase, and `/services/[slug]` rendered published service details or returned 404 for unknown/unpublished slugs. The standalone `/services` hub has since been removed; the Solutions menu links directly to the service detail routes. `/about` lists only active service-area rows; `/contact` reads only explicitly public contact settings. Both show clear pending-content messaging when the business has not published confirmed data. Query errors are surfaced and empty lists have an explicit state. Migration `202610150003_add_demo_services.sql` was applied to the linked development project. At the Slice 3 checkpoint, the estimate form was not implemented; it was subsequently completed in Slice 4 below.
 
 **Outcome:** Proposal public pages are data-backed and the CMS can eventually edit their content.
 

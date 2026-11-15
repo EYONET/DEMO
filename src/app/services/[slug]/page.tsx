@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
 import ResidentialDeepCleaningPage from "@/components/residential-deep-cleaning-page";
+import MoveInMoveOutCleaningPage from "@/components/move-in-move-out-cleaning-page";
 import ServiceCardImage from "@/components/service-card-image";
 import {
   getPublishedServices,
@@ -33,6 +34,14 @@ export async function generateMetadata({
       title: "Residential Deep Cleaning | Crown Cleaning Solutions",
       description:
         "Explore residential, deep, move-in / move-out, apartment, and condo cleaning options from Crown Cleaning Solutions in Aurora and Denver, Colorado.",
+    };
+  }
+
+  if (slug === "move-in-move-out-cleaning") {
+    return {
+      title: "Move-In / Move-Out Cleaning | Crown Cleaning Solutions",
+      description:
+        "Explore move-in and move-out cleaning from Crown Cleaning Solutions in Aurora and Denver, Colorado. Request an estimate and share your service needs.",
     };
   }
 
@@ -68,6 +77,18 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
     );
   }
 
+  if (slug === "move-in-move-out-cleaning") {
+    const services = await getPublishedServices();
+
+    return (
+      <div className="crown-site">
+        <SiteHeader />
+        <MoveInMoveOutCleaningPage services={services} service={service} />
+        <SiteFooter />
+      </div>
+    );
+  }
+
   const inclusions = getStringList(service.inclusions);
   const exclusions = getStringList(service.exclusions);
 
@@ -77,7 +98,7 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
       <main id="main">
         <section className="page-hero section">
           <div className="container">
-            <Link className="back-link" href="/services">← All services</Link>
+            <Link className="back-link" href="/#solutions">← All services</Link>
             <div className="eyebrow"><span className="eyebrow-dot" /> Service details</div>
             <h1>{service.title}</h1>
             <p className="page-lead">{service.summary}</p>

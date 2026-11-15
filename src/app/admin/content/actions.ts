@@ -281,7 +281,6 @@ export async function saveService(
   if (!result.data) return { message: "This service is unavailable or you no longer have permission to edit it." };
 
   revalidatePath("/");
-  revalidatePath("/services");
   revalidatePath(`/services/${parsed.data.slug}`);
   return { success: true, message: "Service saved." };
 }
@@ -346,7 +345,6 @@ export async function deleteService(
   }
 
   revalidatePath("/");
-  revalidatePath("/services");
   revalidatePath(`/services/${service.slug}`);
   revalidatePath("/admin/content");
 
@@ -672,7 +670,6 @@ export async function uploadServiceImage(
   }
 
   revalidatePath("/");
-  revalidatePath("/services");
   revalidatePath(`/services/${existing.slug}`);
   return {
     success: true,

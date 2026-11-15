@@ -29,10 +29,17 @@ const initialValues: InquiryFormValues = {
 
 type InquiryFormProps = {
   services: PublishedService[];
+  defaultServiceId?: string;
 };
 
-export default function InquiryForm({ services }: InquiryFormProps) {
-  const [values, setValues] = useState(initialValues);
+export default function InquiryForm({
+  services,
+  defaultServiceId = "",
+}: InquiryFormProps) {
+  const [values, setValues] = useState(() => ({
+    ...initialValues,
+    service_id: defaultServiceId,
+  }));
   const [state, formAction, isPending] = useActionState(
     submitInquiry,
     initialState,

@@ -35,7 +35,17 @@ export default function MobileNavigation({
         <details className="nav-dropdown">
           <summary>Solutions</summary>
           <div className="nav-dropdown-menu">
-            <Link href="/services" onClick={closeMenu}>All cleaning services</Link>
+            <details className="nav-subdropdown">
+              <summary>All Services</summary>
+              <div className="nav-submenu">
+                <Link href="/services/car-detailing" onClick={closeMenu}>Car Detailing</Link>
+                <Link href="/services/carpet-cleaning" onClick={closeMenu}>Carpet Cleaning</Link>
+                <Link href="/services/upholstery-cleaning" onClick={closeMenu}>Upholstery Cleaning</Link>
+                <Link href="/services/move-in-move-out-cleaning" onClick={closeMenu}>Move-in / Move-out Cleaning</Link>
+                <Link href="/services/residential-deep-cleaning" onClick={closeMenu}>Residential Deep Cleaning</Link>
+                <Link href="/services/post-construction-cleaning" onClick={closeMenu}>Post-Construction Cleaning</Link>
+              </div>
+            </details>
             <Link href="/light-and-deep-cleaning" onClick={closeMenu}>Light &amp; Deep Cleaning</Link>
           </div>
         </details>

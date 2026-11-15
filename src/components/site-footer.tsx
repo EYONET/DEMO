@@ -39,8 +39,6 @@ export default async function SiteFooter() {
           <Link href="/#coverage">Service area</Link>
           <Link href="/#protocol">How It Works</Link>
           <Link href="/contact">Contact</Link>
-          <Link href="/privacy-policy">Privacy Policy</Link>
-          <Link href="/terms-of-service">Terms of Service</Link>
           <Link className="crown-footer-cta" href="/#quote">
             Request an estimate <span aria-hidden="true">↗</span>
           </Link>
@@ -48,6 +46,8 @@ export default async function SiteFooter() {
       </div>
       <div className="crown-container crown-footer-bottom">
         <span>© {new Date().getFullYear()} Crown Cleaning Solutions</span>
+                  <Link href="/privacy-policy">Privacy Policy</Link>
+          <Link href="/terms-of-service">Terms of Service</Link>
         <span>Estimate requests require team follow-up and are not confirmed appointments.</span>
       </div>
     </footer>

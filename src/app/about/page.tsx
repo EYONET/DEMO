@@ -44,7 +44,7 @@ export default async function AboutPage() {
                 availability for your request.
               </p>
               <div className="about-story-actions">
-                <Link className="button button-outline" href="/services">
+                <Link className="button button-outline" href="/#solutions">
                   Explore services <span aria-hidden="true">↗</span>
                 </Link>
                 <Link className="button button-dark" href="/#quote">
