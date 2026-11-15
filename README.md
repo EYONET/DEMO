@@ -201,3 +201,5 @@ The CMS at `/admin/content` edits homepage hero copy, service descriptions, publ
 - Use Supabase Row Level Security for data authorization; protecting routes in the UI is not sufficient.
 - The public quote form must create inquiries only; it must not expose inquiries or claim to confirm appointments.
 - The chatbot is Option A: a predefined FAQ decision tree, with no LLM/API integration.
+#   D e p l o y m e n t _ C C M  
+ 
